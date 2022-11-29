@@ -17,7 +17,7 @@ if (process.env.DB_PASS) {
   // const auth = params.auth.split(':');
 
   config = {
-    user: 'citizenkanine',
+    user: 'danraskin',
     host: 'db.bit.io',
     database: 'danraskin/citizen_kanine',
     password: process.env.DB_PASS, // key from bit.io database page connect menu
