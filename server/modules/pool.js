@@ -19,7 +19,7 @@ if (process.env.DB_PASS) {
   config = {
     user: 'citizenkanine',
     host: 'db.bit.io',
-    database: 'DANRASKIN/citizen_kanine',
+    database: 'danraskin/citizen_kanine',
     password: process.env.DB_PASS, // key from bit.io database page connect menu
     port: 5432,
     ssl: true,
