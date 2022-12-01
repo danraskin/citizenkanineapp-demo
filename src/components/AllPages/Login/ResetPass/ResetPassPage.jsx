@@ -19,24 +19,25 @@ function ResetPassPage() {
 
   const resetPassword = (event) => {
     event.preventDefault();
-    if ((newPass === confPass) && (newPass != '')) {
-      dispatch({
-        type: 'RESETPASS',
-        payload: {
-          password: newPass,
-          id: user.id
-        },
-      });
+    // if ((newPass === confPass) && (newPass != '')) {
+    //   dispatch({
+    //     type: 'RESETPASS',
+    //     payload: {
+    //       password: newPass,
+    //       id: user.id
+    //     },
+    //   });
 
-      setNewPass('');
-      setConfPass('');
-      dispatch({ type: 'PASSWORD_RESET' });
-      swal("Password changed!");
-      // history.push('/home');
-    } else {
-      console.log('password input fail!');
-      dispatch({ type: 'PASSWORD_INPUT_ERROR' });
-    }
+    //   setNewPass('');
+    //   setConfPass('');
+    //   dispatch({ type: 'PASSWORD_RESET' });
+    //   swal("Password changed!");
+    //   // history.push('/home');
+    // } else {
+    //   console.log('password input fail!');
+    //   dispatch({ type: 'PASSWORD_INPUT_ERROR' });
+    // }
+    dispatch({ type: 'PASSWORD_CHANGE_DISABLED'});
   }; // end resetPass
 
   return (

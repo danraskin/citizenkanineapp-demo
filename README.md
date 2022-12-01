@@ -17,7 +17,11 @@
 
 _Duration: Two Week Sprint_
 
-  
+_[preview app](http://citizen-kanine-demo.herokuapp.com)_
+
+>username: admin
+>
+>password: admin
 
   ## Summary
 

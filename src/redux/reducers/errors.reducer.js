@@ -42,6 +42,8 @@ const resetPasswordMessage = (state = '', action) => {
       return 'Password must match!';
     case 'PASSWORD_RESET_FAILED':
       return 'Password failed to reset.';
+    case 'PASSWORD_CHANGE_DISABLED':
+      return 'Password change disabled';
     default:
       return state;
   }
