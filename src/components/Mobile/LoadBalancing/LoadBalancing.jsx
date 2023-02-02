@@ -106,7 +106,7 @@ function LoadBalancing() {
       {/*----LANDSCAPE NAV----*/}
       <Box sx={{ height: '10%',
                  width: '100%',  
-                 display: {xs: 'none', sm: 'flex'},
+                 display: {xs: 'none', smDD: 'flex'},
                  flexDirection: 'row', 
                  justifyContent: 'space-between',
                  bgcolor: '#e0603f' }}>
@@ -140,7 +140,7 @@ function LoadBalancing() {
             sx={{
               height: '90%',
               width: '18%',
-              display: {xs: 'none', sm: 'flex'},
+              display: {xs: 'none', smDD: 'flex'},
               flexDirection: 'column',
               alignItems: 'center',
               flexWrap: 'wrap',
@@ -242,7 +242,7 @@ function LoadBalancing() {
                       {(provided, snapshot) => (
 
                         <Box
-                         //if dog has a flagged status and dragging is disabled, open details
+                         //if dog has a flag f ged status and dragging is disabled, open details
                          {...openDialog} 
                          onTouchStart={() => setDoggo(dog)}
                           //----DND----//
