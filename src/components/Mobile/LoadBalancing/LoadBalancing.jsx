@@ -86,7 +86,7 @@ function LoadBalancing() {
       </Grid>
 
       {/*---PORTRAIT DIRECTIONS---*/}
-      <Card sx={{display: { xs: 'flex', sm: 'none' }, flexDirection: 'column', width: '60%', height: '40%' }}>
+      <Card sx={{display: { xs: 'flex', smDD: 'none' }, flexDirection: 'column', width: '60%', height: '40%' }}>
           <CardMedia
             component="img"
             height="50%"
