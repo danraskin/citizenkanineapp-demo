@@ -17,24 +17,31 @@ if (process.env.DB_PASS) {
   // const auth = params.auth.split(':');
 
   config = {
-    user: 'danraskin',
-    host: 'db.bit.io',
-    database: 'danraskin/citizen_kanine',
-    password: process.env.DB_PASS, // key from bit.io database page connect menu
-    port: 5432,
-    ssl: true,
+    // user: 'danraskin',
+    // host: 'db.bit.io',
+    database: process.env.DATABASE_URL,
+    // password: process.env.DB_PASS, // key from bit.io database page connect menu
+    // port: 5432,
+    //ssl: true //from bit.io settings
+    ssl: {
+      rejectUnauthorized: false
+    },
   };
 } else {
   config = {
     host: 'localhost', // Server hosting the postgres database
     port: 5432, // env var: PGPORT
     database: 'citizen_kanine', // CHANGE THIS LINE! env var: PGDATABASE, this is likely the one thing you need to change to get up and running
+    schema: 'ck_demo_staging'
   };
 }
 
 // this creates the pool that will be shared by all other modules
 const pool = new pg.Pool(config);
 
+pool.on('connect',(client)=> {
+  client.query(`SET search_path TO ${config.schema}, public`);
+});
 // the pool with emit an error on behalf of any idle clients
 // it contains if a backend error or network partition happens
 pool.on('error', (err) => {
