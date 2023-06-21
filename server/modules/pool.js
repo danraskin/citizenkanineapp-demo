@@ -8,14 +8,14 @@ if (process.env.DATABASE_URL) {
     ssl: {
       rejectUnauthorized: false
     },
-    schema: 'ck_demo_staging'
+    schema: 'ck_demo_prod'
   };
 } else {
   config = {
     host: 'localhost',
     port: 5432, // env var: PGPORT
     database: 'citizen_kanine', 
-    schema: 'ck_demo_staging'
+    schema: 'ck_demo_prod'
   };
 }
 

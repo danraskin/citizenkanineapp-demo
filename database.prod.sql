@@ -5,20 +5,22 @@
 -- Otherwise you will have errors!
 
 -- ORDERING BASED ON DEPENDENT COLUMNS/SECTIONS:
-DROP TABLE IF EXISTS daily_dogs;
-DROP TABLE IF EXISTS dogs_schedule_changes;
-DROP TABLE IF EXISTS clients_schedule;
-DROP TABLE IF EXISTS dogs;
-DROP TABLE IF EXISTS clients;
-DROP TABLE IF EXISTS routes;
-DROP TABLE IF EXISTS employees_schedule;
-DROP TABLE IF EXISTS employees_schedule_changes;
-DROP TABLE IF EXISTS admin_notes;
-DROP TABLE IF EXISTS "user";
-DROP TABLE IF EXISTS employees;
-DROP TABLE IF EXISTS services;
+CREATE SCHEMA IF NOT EXISTS ck_demo_prod;
 
-CREATE TABLE employees (
+	DROP TABLE IF EXISTS ck_demo_prod.daily_dogs;
+	DROP TABLE IF EXISTS ck_demo_prod.dogs_schedule_changes;
+	DROP TABLE IF EXISTS ck_demo_prod.clients_schedule;
+	DROP TABLE IF EXISTS ck_demo_prod.dogs;
+	DROP TABLE IF EXISTS ck_demo_prod.clients;
+	DROP TABLE IF EXISTS ck_demo_prod.routes;
+	DROP TABLE IF EXISTS ck_demo_prod.employees_schedule;
+	DROP TABLE IF EXISTS ck_demo_prod.employees_schedule_changes;
+	DROP TABLE IF EXISTS ck_demo_prod.admin_notes;
+	DROP TABLE IF EXISTS ck_demo_prod."user";
+	DROP TABLE IF EXISTS ck_demo_prod.employees;
+	DROP TABLE IF EXISTS ck_demo_prod.services;
+
+CREATE TABLE ck_demo_prod.employees (
 	"id" SERIAL PRIMARY KEY,
 	"first_name" VARCHAR(150) NOT NULL,
 	"last_name" VARCHAR(150), 
@@ -34,7 +36,7 @@ CREATE TABLE employees (
 
 --** Employees MOCK DATA **--
 -- REMOVE BEFORE DEPLOYMENT
-insert into employees 
+insert into ck_demo_prod.employees 
 	(first_name, last_name, email, phone, street, city, "zip", admin) 
 values 
 	('Danny', 'Paolini', 'dpaolini0@paypal.com', '(840)673-2127', '2900 W 43rd St', 'Minneapolis',  55410, false),
@@ -47,9 +49,9 @@ values
 
 
 -- removed email from user since we no longer need it for password retrieval.
-CREATE TABLE "user" (
+CREATE TABLE ck_demo_prod."user" (
 	"id" SERIAL PRIMARY KEY,
-	"emp_id" INT REFERENCES employees(id) ON DELETE CASCADE,
+	"emp_id" INT REFERENCES ck_demo_prod.employees(id) ON DELETE CASCADE,
 	"username" VARCHAR(150),
 	"password" VARCHAR(150) NOT NULL,
 	"admin" BOOLEAN DEFAULT FALSE,
@@ -59,7 +61,7 @@ CREATE TABLE "user" (
 --** USER INITIALIZATION DATA **--
 --** USERNAME: 'admin'
 --** PASSWORD: 'admin'
-INSERT INTO "user"
+INSERT INTO ck_demo_prod."user"
 	("username","password","admin", "emp_id")
 VALUES
 	('admin','$2a$10$UqOGOFQpFGSPEi/X1emtGOkqYQ.LD6SjSC03FZ2lZpb5EiBEbrfEu',true, null),
@@ -67,9 +69,9 @@ VALUES
 	('packleader','$2a$10$UqOGOFQpFGSPEi/X1emtGOkqYQ.LD6SjSC03FZ2lZpb5EiBEbrfEu',true, 2);
 	
 
-CREATE TABLE employees_schedule (
+CREATE TABLE ck_demo_prod.employees_schedule (
 	"id" SERIAL PRIMARY KEY,
-	"emp_id" INT NOT NULL REFERENCES employees(id) ON DELETE CASCADE ,
+	"emp_id" INT NOT NULL REFERENCES ck_demo_prod.employees(id) ON DELETE CASCADE ,
 	"week" INT NOT NULL,
 	"1" BOOLEAN DEFAULT FALSE,
 	"2" BOOLEAN DEFAULT FALSE,
@@ -82,7 +84,7 @@ CREATE TABLE employees_schedule (
 --** Employee Schedule MOCK DATA **--
 -- REMOVE BEFORE DEPLOYMENT
 
-insert into employees_schedule
+insert into ck_demo_prod.employees_schedule
 	("emp_id", "week", "1", "2", "3", "4", "5") 
 values
 	(1, 1, true, true, false, true, true),
@@ -100,8 +102,8 @@ values
 	(7, 1, true, true, true, true, false),
 	(7, 2, true, true, true, true, false);
 
--- ADDED EMP SCHEDULE CHANGES TABLE (Yani)
-CREATE TABLE employees_schedule_changes (
+-- ADDED EMP SCHEDULE CHANGES TABLE ck_demo_prod.(Yani)
+CREATE TABLE ck_demo_prod.employees_schedule_changes (
 	"id" SERIAL PRIMARY KEY,
 	"emp_id" INT NOT NULL,   --REFERENCES clients(id) ON DELETE CASCADE--
 	"date_to_change" DATE NOT NULL,
@@ -110,12 +112,12 @@ CREATE TABLE employees_schedule_changes (
 	UNIQUE("emp_id", "date_to_change")
 	);
 
-CREATE TABLE routes (
+CREATE TABLE ck_demo_prod.routes (
 	"id" SERIAL PRIMARY KEY,
 	"name" VARCHAR(150)
 	);
 
-INSERT INTO routes
+INSERT INTO ck_demo_prod.routes
 	("name")
 VALUES
 	('Tangletown'),
@@ -124,13 +126,13 @@ VALUES
 	('Misfits'),
 	('Unassigned');
 
-CREATE TABLE services (
+CREATE TABLE ck_demo_prod.services (
 	"id" SERIAL PRIMARY KEY,
 	"name" VARCHAR (150),
 	"price" INT
 );
 
-INSERT INTO services
+INSERT INTO ck_demo_prod.services
 	("name", "price")
 VALUES
 	('Group Dog Walking: Friends & Family', '20'),
@@ -142,7 +144,7 @@ VALUES
 	('Group Dog Walking: 2 dogs 5x / week', '37'),
 	('Group Dog Walking: 3 dogs', '54'); --3 dogs, how many times a week?
 
-CREATE TABLE clients (
+CREATE TABLE ck_demo_prod.clients (
 	"id" SERIAL PRIMARY KEY,
 	"first_name" VARCHAR(150) NOT NULL,
 	"last_name" VARCHAR(150),
@@ -150,7 +152,7 @@ CREATE TABLE clients (
 	"city" VARCHAR(150),
 	"zip" INT,
 --	"service_id" INT NOT NULL REFERENCES,
-	"route_id" INT NOT NULL REFERENCES routes(id),
+	"route_id" INT NOT NULL REFERENCES ck_demo_prod.routes(id),
 	"phone" VARCHAR(13),
 	"email" VARCHAR(150) NOT NULL,
 	"notes" VARCHAR,
@@ -162,7 +164,7 @@ CREATE TABLE clients (
 --** Clients MOCK DATA -- Using addresses found in the area surrounding Lake Harriet **--
 -- REMOVE BEFORE DEPLOYMENT
 
-insert into clients 
+insert into ck_demo_prod.clients 
 	(first_name, last_name, street, city, zip, route_id, phone, email, notes) 
 values 
 	('Adam', 'Olson', '2900 W 43rd St', 'Minneapolis',  55410, 4, '(893)236-3575', 'aolson@nature.com', 'Back Door'),
@@ -187,9 +189,9 @@ values
 	('Rob', 'Cannon', '812 W 46th St', 'Minneapolis', 55419, 3, '(976)109-9306', 'cannonpress@sbwire.com', 'Side Door - Retina scan entry'),
 	('Don', 'Jacobson', '1601 W 50th St', 'Minneapolis', 55419, 1, '(849)163-0399', 'dj1601@msu.edu', 'Door Code #45312');
 
-CREATE TABLE dogs (
+CREATE TABLE ck_demo_prod.dogs (
 	"id" SERIAL PRIMARY KEY,
-	"client_id" INT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+	"client_id" INT NOT NULL REFERENCES ck_demo_prod.clients(id) ON DELETE CASCADE,
 	"name" VARCHAR(150),
 	"image" VARCHAR,
 	"vet_name" VARCHAR(150),
@@ -204,7 +206,7 @@ CREATE TABLE dogs (
 --** Dogs MOCK DATA **--
 -- REMOVE BEFORE DEPLOYMENT
 
-insert into dogs 
+insert into ck_demo_prod.dogs 
 	(client_id, name, vet_name, vet_phone, image, notes, flag) 
 values
 	(1, 'Alvin', 'Micheal Matschoss', '(488)406-3596', 'https://res.cloudinary.com/ddmwrgnrd/image/upload/v1668904895/Dog%20Photos/Pictures-Dogs-Making-Funny-Faces.jpg_copy_mckfqu.png', 'Very good boy', false),
@@ -243,11 +245,11 @@ values
 	(20, 'Nova', 'Derwin Pritchard', '(504)919-7307', 'https://res.cloudinary.com/ddmwrgnrd/image/upload/v1668910628/Dog%20Photos/New/medium-sized-dogs-bull-terrier-1613077403_srggj5.jpg', 'Total diva - look out for her attitude', true);
 
 
--- ** Changed table name to client_schedule since the days will be set for the client and changes will be made to individual dogs.
+-- ** Changed table ck_demo_prod.name to client_schedule since the days will be set for the client and changes will be made to individual dogs.
 -- ** Changed the weekday column titles from m-f to (1-5) to make using MUI calendar data easier.
-CREATE TABLE clients_schedule (
+CREATE TABLE ck_demo_prod.clients_schedule (
 	"id" SERIAL PRIMARY KEY,
-	"client_id" INT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+	"client_id" INT NOT NULL REFERENCES ck_demo_prod.clients(id) ON DELETE CASCADE,
 	"1" BOOLEAN DEFAULT FALSE,
 	"2" BOOLEAN DEFAULT FALSE,
 	"3" BOOLEAN DEFAULT FALSE,
@@ -258,7 +260,7 @@ CREATE TABLE clients_schedule (
 --** Clients Schedule MOCK DATA **--
 -- REMOVE BEFORE DEPLOYMENT
 -- everyone is scheduled for the demo tuesday
-insert into clients_schedule
+insert into ck_demo_prod.clients_schedule
 	("client_id", "1", "2", "3", "4", "5") 
 values
 	(1, true, true, false, true, true),
@@ -283,10 +285,10 @@ values
 	(20, true, true, false, false, false);
 	
 	
-CREATE TABLE dogs_schedule_changes (
+CREATE TABLE ck_demo_prod.dogs_schedule_changes (
 	"id" SERIAL PRIMARY KEY,
-	"dog_id" INT NOT NULL REFERENCES dogs(id) ON DELETE CASCADE,
-	"client_id" INT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+	"dog_id" INT NOT NULL REFERENCES ck_demo_prod.dogs(id) ON DELETE CASCADE,
+	"client_id" INT NOT NULL REFERENCES ck_demo_prod.clients(id) ON DELETE CASCADE,
 	"date_to_change" DATE NOT NULL,
 	"is_scheduled" BOOLEAN,
 	"date" DATE DEFAULT CURRENT_DATE,
@@ -295,13 +297,13 @@ CREATE TABLE dogs_schedule_changes (
 	
 -- ** added "week_of_year" to daily_dogs for purposes of invoice query.
 -- ** week_of_year added to each data row in mobile.router PUT request	
-CREATE TABLE daily_dogs (
+CREATE TABLE ck_demo_prod.daily_dogs (
 	"id" SERIAL PRIMARY KEY,
 	"name" VARCHAR(150) NOT NULL,
 	"date" DATE DEFAULT CURRENT_DATE,
-	"dog_id" INT NOT NULL REFERENCES dogs(id),
-	"route_id" INT NOT NULL REFERENCES routes(id),
-	"client_id" INT NOT NULL REFERENCES clients(id),
+	"dog_id" INT NOT NULL REFERENCES ck_demo_prod.dogs(id),
+	"route_id" INT NOT NULL REFERENCES ck_demo_prod.routes(id),
+	"client_id" INT NOT NULL REFERENCES ck_demo_prod.clients(id),
 	"checked_in" BOOLEAN DEFAULT NULL,
 	"no_show" BOOLEAN DEFAULT NULL,
 	"cancelled" BOOLEAN DEFAULT NULL,
@@ -311,7 +313,7 @@ CREATE TABLE daily_dogs (
 -- ** daily_dogs MOCK DATA
 -- REMOVE BEFORE DEPLOYMENT
 
-insert into daily_dogs
+insert into ck_demo_prod.daily_dogs
 	("date","name", "dog_id","checked_in","no_show","cancelled","route_id","client_id")
 values
 	('2022-10-31','Finn','3','true','false','false','1','1'),
@@ -334,13 +336,13 @@ values
 	('2022-11-08','Maple','6','true','false','false','1','4'),
 	('2022-11-09','Maple','6','true','false','false','1','4');
 
-CREATE TABLE admin_notes (
+CREATE TABLE ck_demo_prod.admin_notes (
 	"id" SERIAL PRIMARY KEY,
-	"user_id" INT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+	"user_id" INT NOT NULL REFERENCES ck_demo_prod."user"(id) ON DELETE CASCADE,
 	"notes" VARCHAR
 	);
 
-INSERT INTO admin_notes
+INSERT INTO ck_demo_prod.admin_notes
 	("user_id", "notes")
 VALUES
 	('1', 'Grant is swapping shifts with Lydia on the 24th'),
