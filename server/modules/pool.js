@@ -7,7 +7,8 @@ if (process.env.DATABASE_URL) {
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
-    }
+    },
+    schema: 'ck_demo_staging'
   };
 } else {
   config = {
