@@ -1,37 +1,19 @@
-/* the only line you likely need to change is
-
- database: 'prime_app',
-
- change `prime_app` to the name of your database, and you should be all set!
-*/
-
 const pg = require('pg');
-const url = require('url');
 
 let config = {};
 
 if (process.env.DATABASE_URL) {
-  // Heroku gives a url, not a connection object
-  // https://github.com/brianc/node-pg-pool
-  // const params = url.parse(process.env.DATABASE_URL);
-  // const auth = params.auth.split(':');
-
   config = {
-    // user: 'danraskin',
-    // host: 'db.bit.io',
     connectionString: process.env.DATABASE_URL,
-    // password: process.env.DB_PASS, // key from bit.io database page connect menu
-    port: 5432,
-    //ssl: true //from bit.io settings
     ssl: {
       rejectUnauthorized: false
-    },
+    }
   };
 } else {
   config = {
-    host: 'localhost', // Server hosting the postgres database
+    host: 'localhost',
     port: 5432, // env var: PGPORT
-    database: 'citizen_kanine', // CHANGE THIS LINE! env var: PGDATABASE, this is likely the one thing you need to change to get up and running
+    database: 'citizen_kanine', 
     schema: 'ck_demo_staging'
   };
 }
