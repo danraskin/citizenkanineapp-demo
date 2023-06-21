@@ -21,7 +21,7 @@ if (process.env.DB_PASS) {
     // host: 'db.bit.io',
     database: process.env.DATABASE_URL,
     // password: process.env.DB_PASS, // key from bit.io database page connect menu
-    // port: 5432,
+    port: 5432,
     //ssl: true //from bit.io settings
     ssl: {
       rejectUnauthorized: false
