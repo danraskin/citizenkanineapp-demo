@@ -10,7 +10,7 @@ const url = require('url');
 
 let config = {};
 
-if (process.env.DB_PASS) {
+if (process.env.DATABASE_URL) {
   // Heroku gives a url, not a connection object
   // https://github.com/brianc/node-pg-pool
   // const params = url.parse(process.env.DATABASE_URL);
@@ -19,7 +19,7 @@ if (process.env.DB_PASS) {
   config = {
     // user: 'danraskin',
     // host: 'db.bit.io',
-    database: process.env.DATABASE_URL,
+    connectionString: process.env.DATABASE_URL,
     // password: process.env.DB_PASS, // key from bit.io database page connect menu
     port: 5432,
     //ssl: true //from bit.io settings
