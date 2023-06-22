@@ -16,7 +16,11 @@ const mobileRouter = require('./routes/mobile.router');
 const invoiceRouter = require('./routes/invoice.router');
 const clientScheduleRouter = require('./routes/clientSchedule.router');
 const adminRouter = require('./routes/admin.router');
-
+const quickbooksRouter = require('./routes/quickbooks.router');
+const oauth2Router = require('./routes/quickbooks.oauth2.router');
+const qbInvoiceRouter = require ('./routes/quickbooks.invoice.router');
+const passReset = require('./routes/passreset.router');
+const qbServicesRouter = require('./routes/quickbooks.services.router');
 
 // Body parser middleware
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -33,20 +37,27 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
+//test middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+
 /* Routes */
 app.use('/api/user', userRouter);
 app.use('/api/image', imageRouter);
-
 app.use('/api/employees', employeesRouter);
-
 app.use('/api/clients', clientsRouter);
 app.use('/api/mobile', mobileRouter);
-
 app.use('/api/invoice', invoiceRouter);
 app.use('/api/clientSchedule', clientScheduleRouter);
-
+app.use('/api/pass_reset', passReset);
 app.use('/api/admin', adminRouter);
-
+app.use('/api/quickbooks', quickbooksRouter);
+app.use('/api/oauth2', oauth2Router);
+app.use('/api/qbInvoice', qbInvoiceRouter);
+app.use('/api/qb_services', qbServicesRouter);
 
 // Serve static files
 app.use(express.static('build'));

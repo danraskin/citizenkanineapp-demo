@@ -1,30 +1,32 @@
 const pg = require('pg');
+const config = require('../modules/config');
 
-let config = {};
+let configPool = {};
 
 if (process.env.DATABASE_URL) {
-  config = {
+  configPool = {
     connectionString: process.env.DATABASE_URL,
     ssl: {
       rejectUnauthorized: false
     },
-    schema: 'ck_demo_staging'
+    schema: config.SCHEMA
   };
 } else {
-  config = {
+  configPool = {
     host: 'localhost',
     port: 5432, // env var: PGPORT
-    database: 'citizen_kanine', 
-    schema: 'ck_demo_staging'
+    database: 'citizen_kanine',
+    schema: config.SCHEMA
   };
 }
 
 // this creates the pool that will be shared by all other modules
-const pool = new pg.Pool(config);
+const pool = new pg.Pool(configPool);
 
 pool.on('connect',(client)=> {
-  client.query(`SET search_path TO ${config.schema}, public`);
+  client.query(`SET search_path TO ${configPool.schema}, public`);
 });
+
 // the pool with emit an error on behalf of any idle clients
 // it contains if a backend error or network partition happens
 pool.on('error', (err) => {

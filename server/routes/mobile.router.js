@@ -42,23 +42,23 @@ router.get('/daily', async (req, res) => {
             break;
         case 1:
             console.log('Monday');
-            searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE ORDER BY route_id;';
+            searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 2:
             console.log('Tuesday');
-            searchQuery += 'WHERE "2" = TRUE AND dogs.active = TRUE ORDER BY route_id;';
+            searchQuery += 'WHERE "2" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 3:
             console.log('Wednesday');
-            searchQuery += 'WHERE "3" = TRUE AND dogs.active = TRUE ORDER BY route_id;';
+            searchQuery += 'WHERE "3" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 4:
             console.log('Thursday');
-            searchQuery += 'WHERE "4" = TRUE AND dogs.active = TRUE ORDER BY route_id;';
+            searchQuery += 'WHERE "4" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 5:
             console.log('Friday');
-            searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE ORDER BY route_id;';
+            searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 6:
             searchQuery = null;
@@ -116,7 +116,7 @@ router.get('/daily', async (req, res) => {
 
         // if there are no changes - add original array to daily_dogs
         if (scheduleAdjustments.length < 1) {
-            console.log('Good to Go!');
+            console.log('Good to Go no adjustments!');
             // insert into daily_dogs
             await Promise.all(scheduledDogs.map(dog => {
                 const insertQuery = `INSERT INTO daily_dogs ("dog_id", "route_id", "client_id", "name") VALUES ($1, $2, $3, $4);`;
@@ -145,7 +145,7 @@ router.get('/daily', async (req, res) => {
                 adjustedDogs.push(item);
             }
 
-            console.log('Good to Go!');
+            console.log('Good to Go with adjustments!');
             // insert into daily_dogs
             await Promise.all(adjustedDogs.map(dog => {
                 const insertQuery = `INSERT INTO daily_dogs ("dog_id", "route_id", "client_id", "name") VALUES ($1, $2, $3, $4)`;
@@ -160,7 +160,7 @@ router.get('/daily', async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK')
         // alert('Error Getting Daily Dogs - Could be due to attempted duplicate entries.')
-        console.log('Error in Generating / Getting Daily Dogs', error);
+        console.log('Error in Generating / Getting Daily Dogs', error.detail);
         res.sendStatus(500);
     } finally {
         client.release()
@@ -174,7 +174,7 @@ router.get('/route/:route_id', async (req, res) => {
     // routes need to be arrays of dog objects ...
     // do we want separate arrays per route?
     const routeQuery = `
-    SELECT daily_dogs.*, dogs.flag, dogs.notes AS dog_notes, dogs.image, routes.name AS route, clients.id, concat_ws(' ', clients.first_name, clients.last_name) AS client_name, clients.notes AS client_protocol, clients.lat, clients.long, clients.street from daily_dogs
+    SELECT daily_dogs.*, dogs.flag, dogs.notes AS dog_notes, dogs.image, routes.name AS route, clients.id, concat_ws(' ', clients.first_name, clients.last_name) AS client_name, clients.notes AS client_protocol, clients.lat, clients.long, clients.street, clients.zip from daily_dogs
 	JOIN dogs
 		ON daily_dogs.dog_id = dogs.id
 	JOIN routes
@@ -189,7 +189,7 @@ router.get('/route/:route_id', async (req, res) => {
 
     pool.query(routeQuery, routeValue)
         .then(routeResponse => {
-            console.log(routeResponse.rows);
+            // console.log(routeResponse.rows);
             let routeArray = routeResponse.rows;
 
 
@@ -201,7 +201,7 @@ router.get('/route/:route_id', async (req, res) => {
 
 router.get('/routes', async (req, res) => {
     const routesQuery = `
-    SELECT daily_dogs.*, dogs.flag, dogs.notes, dogs.image, routes.name AS route, clients.lat, clients.long, clients.street from daily_dogs
+    SELECT daily_dogs.*, dogs.flag, dogs.notes, dogs.image, routes.name AS route, clients.lat, clients.long, clients.street, clients.zip from daily_dogs
 	JOIN dogs
 		ON daily_dogs.dog_id = dogs.id
 	JOIN routes
@@ -215,6 +215,7 @@ router.get('/routes', async (req, res) => {
     pool.query(routesQuery)
         .then(allRoutesRes => {
             let dailyRoutes = allRoutesRes.rows;
+            // console.log('daily routes test', dailyRoutes)
             res.send(dailyRoutes);
         }).catch((error => {
             console.log('/routes error getting all daily routes:', error);

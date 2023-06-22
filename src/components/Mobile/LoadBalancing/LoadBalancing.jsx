@@ -45,7 +45,7 @@ function LoadBalancing() {
   const [draggingStatus, setDraggingStatus] = useState(true);
   //VIBRATES PHONE WHEN DND UNLOCKED
   const onDragStart = (result) => {
-    console.log('drag start', result)
+    //console.log('drag start', result)
 
     //if(dailyRoutes[SourceBuffer.])
    
@@ -55,7 +55,7 @@ function LoadBalancing() {
   };
   //TRIGGERS DND LOGIC IN REDUCER
   const onDragEnd = (result) => {
-    console.log('drag end');
+    //console.log('drag end');
 
     //prevents being triggered if outside of lists
     if (!result.destination) return; 
@@ -70,7 +70,7 @@ function LoadBalancing() {
   const [doggo, setDoggo] = useState({});
   //DOUBLE CLICK LISTENER FOR DOG DETAILS
   const openDialog = useDoubleTap((event) => {
-    console.log('Double tapped');
+    //console.log('Double tapped');
     if (doggo.flag === true){
       setShowDetails(!showDetails);
     }
@@ -200,7 +200,7 @@ function LoadBalancing() {
                       }}>
                   {/* maps through each dog in route list and creates a chip */}
                   {dailyRoutes && dailyRoutes[route].map((dog, index) => 
-                    <Grid container key={dog.id} 
+                    <Grid container key={dog.id}
                         sx={{display: 'flex', 
                              flexDirection: 'column', 
                              gap: 1,
@@ -242,7 +242,7 @@ function LoadBalancing() {
                       {(provided, snapshot) => (
 
                         <Box
-                         //if dog has a flag f ged status and dragging is disabled, open details
+                         //if dog has a flagged status and dragging is disabled, open details
                          {...openDialog} 
                          onTouchStart={() => setDoggo(dog)}
                           //----DND----//

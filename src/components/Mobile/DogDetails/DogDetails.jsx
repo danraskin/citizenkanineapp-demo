@@ -5,6 +5,7 @@ import { Modal, Accordion, AccordionSummary, AccordionDetails, Fab, CardMedia, C
 import EditIcon from '@mui/icons-material/Edit';
 import FlagIcon from '@mui/icons-material/Flag';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import SendToMobile from '@mui/icons-material/SendToMobile';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MobileImageUpload from './MobileImageUpload';
@@ -20,6 +21,7 @@ function DogDetails() {
 
   // specific dog details - fetched by the useEffect
   const dog = useSelector(store => store.details);
+  const route = useSelector(store => store.routeReducer);
   // modal open and close status
   const status = useSelector(store => store.modal.status);
 
@@ -37,32 +39,50 @@ function DogDetails() {
     }
   }, [params.id])
 
+  
+//this routes the user back to the route for the day
+  const backFunction = (event) => {
+    const currentRoute  = route.filter(thisDog => thisDog.dog_id === dog.dog_id)
+    const currentRouteId = currentRoute[0].route_id
+    history.push(`/m/route/${currentRouteId}`)
+  }
 
   // while we were not able to get map display functionality, clicking this should open either the google maps app or a webpage 
   const openMap = async (dog) => {
     // takes in address details and encodes them into URI 
     const destination = encodeURIComponent(`${dog.street} ${dog.zip}`);
     // based off of street address and city it pulls up a google map page
-    const link = `http://maps.google.com/?daddr=${destination}`;
+    const link = `https://maps.google.com/?daddr=${destination}`;
     window.open(link);
   }
 
 
   // this is a button that allows for an employee to click and prompt for a phone call to a given number
   const clicktoCall = (number) => {
-    // removes any symbols from the phone number
-    let nosymbols = number.replace(/[^a-zA-Z0-9 ]/g, '');
+     // removes any symbols and letters from the phone number
+    let nosymbols = number.replace(/[^+\d]+/g, "");
     // removes white space from number
     let readyNumber = nosymbols.trim();
     // sends prompt to call number
-    window.open(`tel:+1${readyNumber}`);
+    location.href = `tel:+1${readyNumber}`;
+  }
+
+    // this is a button that allows for an employee to click and prompt for a phone call to a given number
+  const clicktoText = (number) => {
+     // removes any symbols and letters from the phone number
+    let nosymbols = number.replace(/[^+\d]+/g, "");
+    // removes white space from number
+    let readyNumber = nosymbols.trim();
+    // sends prompt to text number
+    location.href = `sms:+1${readyNumber}`;
   }
 
   // function that allows an employee to add notes to a dog
   const submitNote = (action) => {
-    console.log(dog.dog_notes, dog.dog_id);
+    //console.log(dog.dog_notes, dog.dog_id);
     let updatedDog = { id: dog.dog_id, note: dog.dog_notes };
     dispatch({ type: 'UPDATE_DOG_NOTE', payload: updatedDog });
+    dispatch({ type: 'ADD_ADMIN_NOTES', payload: dog.dog_notes });
     setEditStatus(false);
   }
 
@@ -70,7 +90,8 @@ function DogDetails() {
     <Grid container spacing={1} sx={{ justifyContent: 'center' }}>
       {/* NAV BACK TO LIST */}
       <Grid item xs={12}>
-        <Button onClick={(event) => history.push(`/m/route/${dog.route_id}`)}>BACK</Button>
+        {/* <Button onClick={(event) => history.push(`/m/route/${dog.route_id}`)}>BACK</Button> */}
+        <Button onClick={(event) => backFunction(event)}>BACK</Button>
       </Grid>
       <Grid item xs={5} sx={{ justifyContent: 'center' }}>
         <Fab color="primary" aria-label="add" size='small' sx={{ position: 'fixed', mt: 1, ml: 1 }}>
@@ -114,7 +135,7 @@ function DogDetails() {
             {editStatus ?
               <>
                 <TextField
-                  value={dog.dog_notes}
+                  value={dog.dog_notes || ''}
                   onChange={(event) => dispatch({ type: 'EDIT_DOG_NOTE', payload: event.target.value })}
                   label='Dog Notes'
                   fullWidth
@@ -142,7 +163,7 @@ function DogDetails() {
         </Card>
       </Grid>
       {/* ACCESS INFORMATION */}
-      <Grid item xs={10}>
+      <Grid item xs={10} sx={{pb: '100px'}}>
         <Card sx={{ mb: 1 }}>
           <Typography align='center'>{dog.client_protocol || 'No protocol on File'}</Typography>
         </Card>
@@ -158,9 +179,27 @@ function DogDetails() {
           <AccordionDetails>
             <Typography variant='body2'> {dog.first_name} {dog.last_name}</Typography>
             {/* <a href="tel:+16127159132">(612)-715-9132</a> */}
-            <Button endIcon={<LocalPhoneIcon fontSize='small' />} onClick={(event) => clicktoCall(dog.phone)}>
-              Call
-            </Button>
+            {dog.phone?
+              <>
+                <Button endIcon={<LocalPhoneIcon fontSize='small' />} onClick={(event) => clicktoCall(dog.phone)}>
+                  Call
+                </Button>
+                <Button endIcon={<SendToMobile fontSize='small' />} onClick={(event) => clicktoText(dog.phone)}>
+                  Text
+                </Button>
+              </>
+              : null}
+            {dog.mobile? 
+            <>
+                <Typography variant='body2'> Second Number</Typography>
+                <Button endIcon={<LocalPhoneIcon fontSize='small' />} onClick={(event) => clicktoCall(dog.mobile)}>
+                  Call
+                </Button>
+                <Button endIcon={<SendToMobile fontSize='small' />} onClick={(event) => clicktoText(dog.mobile)}>
+                 Text
+                </Button>  
+            </>
+          : null}
 
           </AccordionDetails>
         </Accordion>
@@ -174,17 +213,22 @@ function DogDetails() {
             <Typography>Vet Info:</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant='body2'>Dr. Terry</Typography>
-            {/* <a href="tel:+16127159132"><LocalPhoneIcon fontSize='small' />(612)-715-9132</a> */}
+          {dog.vet_name || dog.vet_phone ? 
+          <>
+            <Typography variant='body2'>{dog.vet_name || ''}</Typography>
             <Button endIcon={<LocalPhoneIcon fontSize='small' />} onClick={(event) => clicktoCall(dog.vet_phone)} >
               Call
             </Button>
+          </>
+            :
+            <Typography sx={{mb: 2}} variant='body2'>No Vet on File</Typography>
+          }
           </AccordionDetails>
         </Accordion>
 
       </Grid>
       {/* Modal for mobile photo upload */}
-      <Modal open={status} sx={{ mt: 5.5, ml: 4 }} >
+      <Modal open={status} sx={{ mt: 5.5, ml: 4.2 }} >
         <Grid item xs={12}>
           <MobileImageUpload id={dog.dog_id} />
 

@@ -7,6 +7,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PetsIcon from '@mui/icons-material/Pets';
 
 
+/* Note: February 2023 This component has been removed because clients
+    are now generated from Quickbooks and no through CK app */
 
 
 function ConfirmClient(){
@@ -174,9 +176,9 @@ console.log('client right now', client)
           {/*-------------------- BUTTONS --------------------*/}
           <Box sx={{mt: 2, display: 'flex', justifyContent: 'space-between' }}>
             <Button variant="outlined" color="info"
-              onClick={back}>Back</Button>  {/*goes back to dog form*/}
+                onClick={back}>Back</Button>  goes back to dog form
             <Button variant="contained" color="success"
-              onClick={saveClient}>Save</Button> 
+                onClick={saveClient}>Save</Button> 
           </Box>
       </Box>
     );

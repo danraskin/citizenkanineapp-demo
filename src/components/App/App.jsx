@@ -9,7 +9,6 @@ import { ThemeProvider } from '@mui/material/styles';
 
 //DESKTOP COMPONENTS
 import Nav from '../Desktop/DesktopNav/Nav';
-import AboutPage from '../AboutPage/AboutPage';
 import SplashPage from '../Desktop/SplashPage/SplashPage';
 import LoginPage from '../AllPages/Login/Login/LoginPage';
 import ResetPassPage from '../AllPages/Login/ResetPass/ResetPassPage';
@@ -18,6 +17,7 @@ import EmployeeList from '../Desktop/Employee/EmployeeList/EmployeeList';
 import ClientList from '../Desktop/Client/ClientList/ClientList';
 import EmployeeSchedule from '../Desktop/Employee/EmployeeSchedule/EmployeeSchedule';
 import AdminSettings from '../Desktop/AdminSettings/AdminSettings';
+import EmailPassResetPage from '../AllPages/Login/ResetPass/EmailPassResetPage';
 import AdminNotes from '../Desktop/AdminNotes/AdminNotes';
 
 //MOBILE COMPONENTS
@@ -38,9 +38,7 @@ import { theme } from '../AllPages/Theme/Theme';
 
 function App() {
   const dispatch = useDispatch();
-
   const user = useSelector(store => store.user);
-
   useEffect(() => {
     dispatch({ type: 'FETCH_USER' });
   }, [dispatch]);
@@ -51,6 +49,7 @@ function App() {
         <div className="app_body">
 
           <Nav />
+
           <Switch>
 
             {/* --------------------- REDIRECTIONS -------------------- */}
@@ -73,15 +72,18 @@ function App() {
                 <LoginPage />}
             </Route>
 
-            {/* ----------------------- DESKTOP ----------------------- */}
-
-            {/* only needed for presentation */}
-            <Route exact path="/about">
-              <AboutPage />
+            <Route path="/emailPassReset">
+              {/* {params.user_id ?
+                <EmailPassResetPage />
+                :
+                <LoginPage />} */}
+              <EmailPassResetPage />
             </Route>
 
+            {/* ----------------------- DESKTOP ----------------------- */}
+
             <ProtectedRoute exact path="/user">
-              {user.admin ? <SplashPage /> : <Redirect to="/m/user" />}
+              {user.admin && window.innerWidth > 600 ? <SplashPage /> : <Redirect to="/m/user" />}
             </ProtectedRoute>
 
             <ProtectedRoute exact path="/invoice">
@@ -104,9 +106,14 @@ function App() {
               {user.admin ? <AdminSettings /> : <Redirect to="/home" />}
             </ProtectedRoute>
 
+            <Route exact path="/resetpass/:user_id/:token" >
+              <ResetPassPage />
+            </Route>
+
             <ProtectedRoute exact path="/resetpass">
               {user.admin ? <ResetPassPage /> : <Redirect to="/home" />}
             </ProtectedRoute>
+
 
             {/* <ProtectedRoute exact path="/adminnotes">
               {user.admin ? <AdminNotes /> : <Redirect to="/home" />}
@@ -117,11 +124,6 @@ function App() {
             <ProtectedRoute exact path="/m/user">
               <MobileTopNav />
               <Home />
-            </ProtectedRoute>
-
-            <ProtectedRoute exact path="/m/map">
-              <MobileTopNav />
-              <Map />
             </ProtectedRoute>
 
             <ProtectedRoute exact path="/m/schedule">
@@ -152,14 +154,10 @@ function App() {
               <MobileTopNav />
               <ResetPassPage />
             </ProtectedRoute>
-
-
-            {/* ----------------------------------------------------- */}
-
-            {/* No matching routes: return 404. */}
+{/* 
             <Route>
               <h1>404</h1>
-            </Route>
+            </Route> */}
 
           </Switch>
           {user.id ?
@@ -168,6 +166,22 @@ function App() {
             :
             null
           }
+          <Switch>
+          <ProtectedRoute exact path="/m/map">
+              <MobileTopNav />
+              <Map />
+            </ProtectedRoute>
+
+            {/* ----------------------------------------- */}
+            
+            {/* No matching routes: return 404. */}
+
+            {/* <Route>
+              <h1>404</h1>
+            </Route> */}
+
+          </Switch>
+
         </div>
       </ThemeProvider>
     </Router>

@@ -17,11 +17,7 @@
 
 _Duration: Two Week Sprint_
 
-_[preview app](http://citizen-kanine-demo.herokuapp.com)_
-
->username: admin
->
->password: admin
+  
 
   ## Summary
 
@@ -234,5 +230,5 @@ Special thanks to the services that made the start of our Map display developmen
  - [Pigeon Maps](https://pigeon-maps.js.org) - React Maps
 
   
-
+test
   

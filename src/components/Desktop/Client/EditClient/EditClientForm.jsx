@@ -28,16 +28,16 @@ const saveChanges = event => {
 }
 
 const editDog = (dog) =>{
-  const clientDogObj = {
-    client_id: client.id,
-    dog_name: dog.dog_name,
-    image: dog.image,
-    dog_id: dog.dog_id,
-    dog_notes: dog.dog_notes,
-    flag: dog.flag,
-    regular: dog.regular
-  }
-  dispatch({type: 'SET_DOG_EDIT', payload: clientDogObj})
+  // const clientDogObj = {
+  //   client_id: client.id,
+  //   dog_name: dog.dog_name,
+  //   image: dog.image,
+  //   dog_id: dog.dog_id,
+  //   dog_notes: dog.dog_notes,
+  //   flag: dog.flag,
+  //   regular: dog.regular
+  // }
+  dispatch({type: 'SET_DOG_EDIT', payload: dog})
   dispatch({ type: 'SET_CLIENT_MODAL', payload: 'EditDogForm' });
 }
 
@@ -56,7 +56,7 @@ const handleClose = () => {
 
 
   return (
-        <Box sx={{ m:2, p:2,  height: '90%', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 1.5 }}>
+        <Box sx={{ m:2, p:2,  height: '95%', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 1.5 }}>
 
               {/*----------------------- HEADER -----------------------*/}
               <Grid sx={{ display: 'flex', flexDirection: 'row', justifyContent:'space-between'}}>  
@@ -75,28 +75,42 @@ const handleClose = () => {
                   value={client.street}
                   onChange={(e) => dispatch({type: 'ADD_STREET', payload: e.target.value})}
                   helperText="Street"  
+                  disabled
                   size="small"/>
                 <TextField 
                   value={client.city}
+                  disabled
                   onChange={(e) => dispatch({type: 'ADD_CITY', payload: e.target.value})}
                   helperText="City"  
                   size="small"/>
                 <TextField 
                   value={client.zip}
+                  disabled
                   onChange={(e) => dispatch({type: 'ADD_ZIPCODE', payload: e.target.value})}
                   helperText="Zip Code"  
                   size="small"/>
                 <TextField 
                   value={client.notes || ''} 
+                  disabled
                   onChange={(e) => dispatch({type: 'ADD_NOTES', payload: e.target.value})}
                   helperText="Entry Protocol"  
                   size="small"/>
                 <TextField 
                   value={client.phone}
+                  disabled
                   onChange={(e) => dispatch({type: 'ADD_PHONE', payload: e.target.value})}
                   helperText="Phone"  
                   size="small"/>
+                <TextField
+                  disabled
+                  focused={false}
+                  value={client.mobile || ''} 
+                  helperText="Mobile"  
+                  size="small" 
+                  InputProps={{readOnly: true, style: {fontWeight: '800', fontSize: "16px"}}}
+                />
                 <TextField 
+                  disabled
                   value={client.email}
                   onChange={(e) => dispatch({type: 'ADD_EMAIL', payload: e.target.value})} 
                   helperText="Email"  
@@ -104,7 +118,7 @@ const handleClose = () => {
                 <TextField 
                   value={client.vet_name || ''} 
                   onChange={(e) => dispatch({type: 'ADD_VET_NAME', payload: e.target.value})}
-                  helperText="Vet"  
+                  helperText="Vet"
                   size="small"/>
                 <TextField 
                   value={client.vet_phone || ''}
@@ -136,7 +150,7 @@ const handleClose = () => {
             <Grid sx={{ display: 'flex', justifyContent: "center", flexDirection: 'row', gap: 1 }}>
               {client.dogs.map((dog, index) => (
                   <Card key={index} sx={{width: '35%', height: '225px', m: 1}}>
-                    <CardActions sx={{ justifyContent: 'space-between', ml: 1, py: 0, pr: 0}}>
+                    <CardActions sx={{ justifyContent: 'space-between', ml: 2, py: 0, pr: 0}}>
                       <Typography>{dog.dog_name}</Typography>
                       <IconButton
                         onClick={() => editDog(dog)}
@@ -184,8 +198,8 @@ const handleClose = () => {
                     <CardMedia component="img"  
                       width="100%"
                       alt="client dog photo"
-                      src={dog.image ? dog.image : 'images/dogfiller.png'}
-                      sx={{height: '100%'}}
+                      src={dog.image ? dog.image : 'Images/dogfiller.png'}
+                      sx={{height: 175, '&:hover': {filter: 'brightness(90%)'}}}
                       />
                   </Card>
                 ))}
@@ -194,12 +208,16 @@ const handleClose = () => {
 
             {/*-------------------- BUTTONS --------------------*/}
             <Box display="flex" justifyContent="space-between">
-              <Button variant="outlined" color="info" onClick={() => dispatch({ type: 'SET_CLIENT_MODAL', payload: 'ClientDetails'})}>Back</Button>
-              <Box width="23%" display="flex" justifyContent="space-between">
-                <Button variant="contained" color="error"
-                  onClick={() => dispatch({ type: 'SET_CLIENT_MODAL', payload: 'AddDogFromEdit'})}>Add Dog</Button>  
-                 <Button variant="contained" color="secondary"
-                  onClick={saveChanges}>Save</Button> 
+             
+              <Button variant="outlined" color="info"
+                onClick={() => dispatch({ type: 'SET_CLIENT_MODAL', payload: 'ClientDetails'})}>Back</Button>
+              <Box width="23%" display="flex" justifyContent="flex-end">
+                
+                <Button variant="contained" color="secondary"
+                      onClick={saveChanges}>Save</Button> 
+                {/* <Button variant="contained" color="error"
+                  onClick={() => dispatch({ type: 'SET_CLIENT_MODAL', payload: 'AddDogFromEdit'})}>Add Dog</Button>   */}
+                 
               </Box>
             </Box>
       </Box>

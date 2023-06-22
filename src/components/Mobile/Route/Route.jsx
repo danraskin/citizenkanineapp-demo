@@ -9,6 +9,10 @@ import FlagIcon from '@mui/icons-material/Flag';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RouteSelect from '../RouteSelect/RouteSelect';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+
+import DogCheckIn from './CheckIn';
+
 
 
 function DailyRoutes() {
@@ -23,11 +27,11 @@ function DailyRoutes() {
     dispatch({ type: 'GET_ROUTE_DETAILS', payload: params.id })
 
 
-    return () => {
-      dispatch({
-        type: 'CLEAR_ROUTE'
-      })
-    }
+    // return () => {
+    //   dispatch({
+    //     type: 'CLEAR_ROUTE'
+    //   })
+    // }
   }, [params.id]);
 
   const [expanded, setExpanded] = useState(false);
@@ -55,6 +59,7 @@ function DailyRoutes() {
   }
 
   const determineStatus = (dog) => {
+    // console.log(dog);
     if (dog.checked_in) {
       return '#B5E3E0';
     }
@@ -66,103 +71,37 @@ function DailyRoutes() {
   }
 
   const getDogDetails = (dogID) => {
-    console.log(dogID);
+   // console.log(dogID);
     history.push(`/m/dog/${dogID}`)
-  }
-
-  const checkIn = (dog) => {
-    console.log('CHECKING IN CLIENT #:', dog.client_id);
-    const dogID = dog.dog_id;
-    const routeID = dog.route_id;
-    const updatedDog = { id: dogID, checked_in: true, no_show: false, cancelled: false, routeID: routeID }
-    dispatch({ type: 'CHECK_IN', payload: updatedDog });
-
-  }
-
-  const noShow = (dog) => {
-    const dogID = dog.dog_id;
-    const routeID = dog.route_id;
-    const updatedDog = { id: dogID, checked_in: false, no_show: true, cancelled: false, routeID: routeID }
-    dispatch({ type: 'NO_SHOW', payload: updatedDog });
-  }
-
-  const cancelWalk = (dog) => {
-    const dogID = dog.dog_id;
-    const routeID = dog.route_id;
-    let updatedDog = { id: dogID, checked_in: false, no_show: false, cancelled: true, routeID: routeID }
-
-    if (dog.cancelled) {
-      updatedDog = { id: dogID, checked_in: false, no_show: false, cancelled: false, routeID: routeID }
-
-    } else {
-      updatedDog = { id: dogID, checked_in: false, no_show: false, cancelled: true, routeID: routeID }
-
-    }
-    dispatch({ type: 'CANCEL_WALK', payload: updatedDog });
   }
 
   return (
     <>
       {route[0] ?
         <Grid container spacing={1} sx={{ justifyContent: 'center', alignItems: 'center', mb: 3, mt: 2 }}>
-
           <Grid item xs={8} sx={{ background: () => getRouteColor(route), color: 'white', mt: 3, textAlign: 'center', textTransform: 'uppercase', borderRadius: 2 }}>
             <Typography variant='h5' sx={{ textAlign: 'center' }}>
               {route[0].route}
             </Typography>
           </Grid>
+          <Grid item xs={8} sx={{display: 'flex', flexDirection: 'row-reverse', justifyContent: 'center', mb: 0}}>
+              <IconButton edge="end" 
+                sx={{border: 1, mt: 1,
+                flexDirection: 'column', px: 2}}
+                onClick={(event) =>  history.push('/m/map')}
+              >
+                <PinDropIcon 
+                  sx={{fontSize: 30, mb: 0}}
+                />
+                <Typography>Map</Typography>
+              </IconButton>
+            </Grid>
           <Grid item xs={12} sx={{ mx: 2 }}>
 
 
             <List sx={{ mb: 10 }}>
-              {route && route.map && route.map((dog) => (
-
-                // <ListItem sx={{ backgroundColor: () => determineStatus(dog) }}
-                // secondaryAction={
-                //   <>
-                //     {dog.cancelled ?
-
-                //       <IconButton edge="end" onClick={(event) => cancelWalk(dog)} >
-                //         <AddCircleIcon sx={{ fill: '#3DA49D' }} />
-                //       </IconButton>
-
-                //       :
-                //       <>
-                //         <IconButton edge="end" onClick={(event) => checkIn(dog)}>
-                //           <CheckBoxIcon sx={{ fill: '#7BCEC8', mr: 2 }} />
-                //         </IconButton>
-                //         <IconButton edge="end" onClick={(event) => noShow(dog)} >
-                //           <EventBusyIcon sx={{ fill: '#F8614D' }} />
-                //         </IconButton>
-                //         {user.admin ?
-                //           <IconButton edge="end" onClick={(event) => cancelWalk(dog)} >
-                //             <CancelIcon sx={{ fill: '#F8614D' }} />
-                //           </IconButton>
-                //           :
-                //           null
-                //         }
-                //       </>
-                //     }
-                //   </>
-                // }
-                // >
-
-                //   <ListItemAvatar onClick={(event) => getDogDetails(dog.dog_id)} >
-                //     {dog.image ?
-                //       <Avatar src={dog.image} />
-                //       :
-                //       <Avatar>
-                //         {dog.name[0]}
-                //       </Avatar>
-
-                //     }
-                //   </ListItemAvatar>
-                //   <ListItemText
-                //     primary={dog.name}
-                //     secondary={dog.client_name}
-                //     sx={{ textDecoration: dog.cancelled ? 'line-through' : null }}
-                //   />
-                <Accordion expanded={expanded === dog.dog_id} onChange={handleChange(dog.dog_id)} sx={{ backgroundColor: () => determineStatus(dog), mb: 1 }}>
+              {route && route.map && route.map((dog, j) => (
+                <Accordion key={j} expanded={expanded === dog.dog_id} onChange={handleChange(dog.dog_id)} sx={{ backgroundColor: () => determineStatus(dog), mb: 1 }}>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <List>
                       <ListItem sx={{ backgroundColor: () => determineStatus(dog) }}>
@@ -180,8 +119,6 @@ function DailyRoutes() {
                         <ListItemText
                           primary={dog.name}
                           secondary={dog.client_name}
-
-
                           sx={{ textDecoration: dog.cancelled ? 'line-through' : null }}
                         />
                         {dog.flag ?
@@ -197,41 +134,7 @@ function DailyRoutes() {
                   </AccordionSummary>
                   <AccordionDetails>
                     <Stack direction='row' spacing={1}>
-
-                      {dog.cancelled ?
-                        <>
-
-                          {user.admin ?
-                            <Button edge="end" variant='contained' color='info' onClick={(event) => cancelWalk(dog)} >
-                              <AddCircleIcon sx={{ mr: 2, p: 1 }} />
-                              ADD DOG
-                            </Button>
-
-                            :
-                            null
-                          }
-                        </>
-
-                        :
-                        <>
-
-                          <Button edge="end" onClick={(event) => checkIn(dog)} variant='contained' color='success' sx={{ mr: 1 }} size='small'>
-                            <CheckBoxIcon sx={{ mr: 2 }} />
-                            CHECK IN
-                          </Button>
-                          <Button edge="end" onClick={(event) => noShow(dog)} variant='contained' color='error' size='small'>
-                            <EventBusyIcon sx={{ mr: 2 }} />
-                            NO SHOW
-                          </Button>
-                          {user.admin ?
-                            <Button edge="end" onClick={(event) => cancelWalk(dog)} variant='contained' color='info' sx={{ mr: 1 }} size='small'>
-                              <CancelIcon sx={{ mr: 2 }} />
-                              CANCEL WALK
-                            </Button>
-                            :
-                            null
-                          }
-                        </>}
+                        <DogCheckIn dog={dog} config="routes"/>
                     </Stack>
 
                   </AccordionDetails>

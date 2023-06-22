@@ -13,7 +13,6 @@ function LoginPage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('useEffect')
     dispatch({ type: 'CLEAR_LOGIN_ERROR' });
   }, []);
 
@@ -33,6 +32,23 @@ function LoginPage() {
     }
   }; // end login
 
+  const onEnterSubmit = (e) => {
+    if (e.keyCode == 13 && e.shiftKey == false) {
+      if (username && password) {
+        dispatch({
+          type: 'LOGIN',
+          payload: {
+            username: username,
+            password: password,
+          },
+        });
+      } else {
+        dispatch({ type: 'LOGIN_INPUT_ERROR' });
+      }
+    };
+};
+
+
   const mobilelogin = (event) => {
     // event.preventDefault();
 
@@ -50,10 +66,6 @@ function LoginPage() {
       dispatch({ type: 'LOGIN_INPUT_ERROR' });
     }
   }; // end login
-
-  const checkMobile = () => {
-
-  }
 
   return (
     <Box className="login_container">
@@ -83,12 +95,19 @@ function LoginPage() {
                 size="small"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
+                onKeyDown={(event) => onEnterSubmit(event)}
               />
               <Button sx={{ display: { xs: 'block', sm: 'none', color: 'primary' } }} onClick={(event) => mobilelogin()}>
                 Login
               </Button>
+              <Button sx={{ display: { xs: 'block', sm: 'none', color: 'primary' } }} onClick={()=> history.push('/emailPassReset')}>
+                Forgot Password?
+              </Button>
               <Button sx={{ display: { xs: 'none', sm: 'block', color: 'primary' } }} onClick={(event) => login()}>
                 Login
+              </Button>
+              <Button sx={{ display: { xs: 'none', sm: 'block', color: 'primary' } }} onClick={()=> history.push('/emailPassReset')}>
+                Forgot Password?
               </Button>
             </CardContent>
           </Card>

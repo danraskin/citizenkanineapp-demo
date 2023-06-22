@@ -20,7 +20,7 @@ const {
  * GET route for admin notes
  */
 router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-console.log('arrived in server get admin notes route')
+// console.log('arrived in server get admin notes route')
 let adminId = req.user.id
   const queryText = `
             SELECT * FROM admin_notes
@@ -30,14 +30,14 @@ const queryValues = [adminId]
 pool.query(queryText, queryValues)
     .then(result => {
    
-    console.log('result from query?', result.rows)
+    // console.log('result from query?', result.rows)
 
 
         res.send(result.rows);
    
     })
     .catch(err => {
-        console.log('Error getting admin notes', err);
+        console.log('Error getting admin notes');
         res.sendStatus(500);
     })
 });
@@ -76,7 +76,7 @@ pool.query(queryText, queryValues)
     pool.query(queryText, [req.params.id])
       .then(() => { res.sendStatus(200); })
       .catch((err) => {
-        console.log('Error completing delete admin notes', err);
+        console.log('Error completing delete admin notes');
         res.sendStatus(500);
       });
   });

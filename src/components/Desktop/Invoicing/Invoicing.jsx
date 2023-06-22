@@ -17,7 +17,7 @@ function Invoicing() {
   const monthsShort = dayjs.monthsShort();
   const getYears = () => {
     let max = 2050;
-    let min = 2020;
+    let min = 2023;
     let yearsArr = [];
     for (let i = min; i <= max; i++) {
       yearsArr.push(i)
@@ -42,6 +42,7 @@ function Invoicing() {
   const fetchInvoiceData = () => {
     //formats month for search query
     const month = months.indexOf(selectedMonth) + 1;
+    //console.log("in fetchInvoiceData", selectedId, selectedYear);
 
     dispatch({
       type: 'FETCH_INVOICE_DATA',
@@ -53,6 +54,9 @@ function Invoicing() {
     });
 
     setId(0);
+  }
+  const updateServices = ()=>{
+    dispatch({type: 'GET_QB_SERVICES'})
   }
 
   return (
@@ -72,8 +76,8 @@ function Invoicing() {
               </MenuItem>
               {clientList && clientList.map && clientList.map((client) => (
                 <MenuItem
-                  key={client.id}
-                  value={client.id}
+                  key={client.client_id}
+                  value={client.client_id}
                 >
                   {client.first_name} {client.last_name}
                 </MenuItem>
@@ -130,6 +134,11 @@ function Invoicing() {
           <Box component="span">
             <ExportCSV monthsShort={monthsShort} />
           </Box>
+          {/* <Button size="small" variant="contained" color="secondary" sx={{ mx: 1, mt: 1 }}
+            onClick={updateServices}
+          >
+            Sync services
+          </Button> */}
 
         </Grid>
       </Grid>
