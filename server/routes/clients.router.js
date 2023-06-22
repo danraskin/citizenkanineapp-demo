@@ -17,9 +17,10 @@ const {
  * GET all clients and their dogs
  */
 router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-  // console.log('arrived in server get all route')
+  console.log('in GET api/clients')
   const queryText = `
-                    SELECT clients.first_name, clients.id, clients.last_name, clients.notes, clients.phone, clients.email, routes.id as route,
+                    SELECT clients.first_name, clients.id as client_id, clients.qb_id, clients.last_name, clients.notes, clients.phone, clients.mobile, clients.email, clients.lat, clients.long, routes.id as route,
+
                     routes.name as route_name, clients.street, clients.city, clients.zip, dogs.name as dog_name, dogs.id as dog_id, dogs.image, dogs.vet_name, dogs.notes as dog_notes, 
                     dogs.vet_phone, dogs.flag, dogs.regular, dogs.active, clients_schedule."1" as monday, clients_schedule."2" as tuesday, clients_schedule."3" as wednesday, clients_schedule."4" as thursday, clients_schedule."5" as friday from clients
                             JOIN dogs
@@ -38,7 +39,7 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
       let idArray = [];
       for (let object of result.rows) {
         // console.log(object.id)
-        idArray.push(object.id)
+        idArray.push(object.client_id)
       }
 
       //this filters out duplicate IDs
@@ -46,11 +47,11 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 
       //this groups result.rows by id
       const group = result.rows.reduce((acc, item) => {
-        if (!acc[item.id]) {
-          acc[item.id] = [];
+        if (!acc[item.client_id]) {
+          acc[item.client_id] = [];
         }
 
-        acc[item.id].push(item);
+        acc[item.client_id].push(item);
         return acc;
       }, {})
       // console.log(result.rows);
@@ -62,12 +63,13 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
         let forDogMap = group[uniqueIds[i]]
 
         // const {first_name, last_name, address} = result.rows[0];
-        const { first_name, last_name, street, city, zip, id, phone, email, notes, vet_name, vet_phone, route, route_name, monday, tuesday, wednesday, thursday, friday } = forDogMap[0];
-        const client = { first_name, last_name, street, city, zip, id, phone, email, notes, vet_name, vet_phone, route, route_name, monday, tuesday, wednesday, thursday, friday }
-        let dogsPreFilter = forDogMap.map(dog => { return ({ dog_name: dog.dog_name, image: dog.image, dog_id: dog.dog_id, dog_notes: dog.dog_notes, flag: dog.flag, regular: dog.regular, active: dog.active}) })
+        const { first_name, last_name, street, city, zip, client_id, qb_id, phone, mobile, email, notes, vet_name, vet_phone, route, route_name, monday, tuesday, wednesday, thursday, friday, lat, long } = forDogMap[0];
+        const client = { first_name, last_name, street, city, zip, client_id, qb_id, phone, mobile, email, notes, vet_name, vet_phone, route, route_name, monday, tuesday, wednesday, thursday, friday, lat, long }
+        let dogsPreFilter = forDogMap.map(dog => { return ({ client_id: client_id, qb_id: qb_id, dog_name: dog.dog_name, image: dog.image, dog_id: dog.dog_id, dog_notes: dog.dog_notes, flag: dog.flag, regular: dog.regular, active: dog.active}) })
+
 
        const dogsResult = dogsPreFilter.filter(dog => dog.active === true)
-       console.log ('dogs array?', dogsResult)
+      //  console.log ('dogs array?', dogsResult)
        
        //add dogs to client
         client.dogs = dogsResult
@@ -88,14 +90,16 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
  * POST route for initially adding a client
  */
 router.post('/', rejectUnauthenticated, async (req, res) => {
+  console.log('in POST api/clients')
   // console.log(req.body);
-  console.log(req.user);
-  const client = await pool.connect();
+  // console.log(req.user);
+  const client = await pool.connect()
+
   const { first_name, last_name, street, city, zip, email, route_id, phone, dogs, schedule, notes, vet_name, vet_phone, flag } = req.body
   // const customer = {first_name, last_name, address, phone, email, route_id}
   const dogArray = dogs
   // const vet = {vet_name, vet_phone}
-  console.log('in client POST route');
+  // console.log('in client POST route');
 
 
   try {
@@ -111,6 +115,8 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
 
     const lat = geoStats.data.addresses[0].latitude;
     const long = geoStats.data.addresses[0].longitude;
+    // const lat = 0;
+    // const long = 0;
     console.log('heres the geoStats!', lat, long);
 
     await client.query('BEGIN')
@@ -150,14 +156,15 @@ router.post('/', rejectUnauthenticated, async (req, res) => {
     res.sendStatus(500);
   } finally {
     client.release()
+    console.log('release pool');
   }
 });
 
 //route to edit client
 router.put('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
-  // console.log('dogs have id?', req.body)
+  console.log('in PUT api/client client:', req.body)
   const connection = await pool.connect();
-  let { first_name, last_name, street, city, zip, id, phone, email, notes, vet_name, vet_phone, route, route_name, dogs } = req.body
+  let { first_name, last_name, street, city, zip, client_id, phone, email, notes, vet_name, vet_phone, route, route_name, dogs } = req.body
   //  console.log('dogs array?', dogs)
   //logic to convert string into correct form for database
   if (route_name === 'Tangletown') {
@@ -171,7 +178,7 @@ router.put('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
   } else {
     route = 5
   }
-  // console.log(route)
+  // console.log('does route change?', route)
   //SQL text for updating client table
   const clientTxt = `
             UPDATE clients
@@ -188,7 +195,7 @@ router.put('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
                   id = $8;
 
   `
-  const clientValues = [street, city, zip, route, phone, email, notes, id]
+  const clientValues = [street, city, zip, route, phone, email, notes, client_id]
   // console.log(clientValues)
   try {
     await connection.query('BEGIN');
@@ -214,26 +221,31 @@ router.put('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
     console.log('Error in PUT route', dbErr)
     await connection.query('ROLLBACK');
     res.sendStatus(500);
+  } finally {
+    connection.release();
+    console.log('release connection');
   }
 });
 
 //route to edit dog
 router.put('/dogs', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
-  // console.log('dogs have id?', req.body)
-  const { dog_name, dog_notes, flag, dog_id } = req.body
+   console.log('dogs have id?', req.body)
+   console.log(typeof(req.body.regular))
+  const { dog_name, dog_notes, flag, regular, dog_id } = req.body
 
   const dogTxt = `
             UPDATE dogs
                 SET
                   name = $1, 
                   notes = $2,
-                  flag = $3
+                  flag = $3,
+                  regular = $4
               
                 WHERE
-                  id = $4;
+                  id = $5;
 
   `
-  const dogValues = [dog_name, dog_notes, flag, dog_id]
+  const dogValues = [dog_name, dog_notes, flag, regular, dog_id]
   try {
     pool.query(dogTxt, dogValues)
     res.sendStatus(201);
@@ -266,10 +278,11 @@ router.post('/dog', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 
 
 router.get('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-  // console.log('arrived in server get one route', req.params.id)
+  console.log('arrived in server get one route', req.params)
   let clientId = req.params.id
   const queryText = `
-    SELECT clients.first_name, clients.id, clients.last_name, clients.notes, clients.phone, clients.email, routes.id as route,
+
+    SELECT clients.first_name, clients.id as client_id, clients.last_name, clients.notes, clients.phone, clients.mobile, clients.email, clients.lat, clients.long, routes.id as route,
     routes.name as route_name, clients.street, clients.city, clients.zip, dogs.name as dog_name, dogs.id as dog_id, dogs.image, dogs.vet_name, 
     dogs.vet_phone, dogs.notes as dog_notes, dogs.flag, dogs.regular, dogs.active,
    clients_schedule."1", clients_schedule."2", clients_schedule."3", clients_schedule."4", clients_schedule."5"  
@@ -288,14 +301,14 @@ router.get('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
   const queryValues = [clientId]
   pool.query(queryText, queryValues)
     .then(result => {
-      // console.log('how to target schedule?', result.rows[0])
+       console.log('how to target schedule?', result.rows[0])
       // console.log(result.rows[0][1])
 
       //all IDs from database
       let idArray = [];
       for (let object of result.rows) {
-        // console.log(object.id)
-        idArray.push(object.id)
+         console.log('id here?', object.client_id)
+        idArray.push(object.client_id)
       }
 
       //this filters out duplicate IDs
@@ -303,25 +316,26 @@ router.get('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 
       //this groups result.rows by id
       const group = result.rows.reduce((acc, item) => {
-        if (!acc[item.id]) {
-          acc[item.id] = [];
+        if (!acc[item.client_id]) {
+          acc[item.client_id] = [];
         }
 
-        acc[item.id].push(item);
+        acc[item.client_id].push(item);
         return acc;
       }, {})
       // console.log(result.rows);
-      console.log(group)
+      console.log('group here', group)
       let clients = [];
 
 
       for (let i = 0; i < uniqueIds.length; i++) {
         let forDogMap = group[uniqueIds[i]]
 
-        // const {first_name, last_name, address} = result.rows[0];
-        const { first_name, last_name, street, city, zip, id, phone, email, notes, vet_name, vet_phone, route, route_name } = forDogMap[0];
-        const client = { first_name, last_name, street, city, zip, id, phone, email, notes, vet_name, vet_phone, route, route_name }
-      let dogsPreFilter = forDogMap.map(dog => { return ({ dog_name: dog.dog_name, image: dog.image, dog_id: dog.dog_id, dog_notes: dog.dog_notes, flag: dog.flag, regular: dog.regular, active: dog.active}) })
+       console.log('id here', forDogMap[0])
+
+        const { first_name, last_name, street, city, zip, client_id, phone, mobile, email, notes, vet_name, vet_phone, route, route_name, lat, long } = forDogMap[0];
+        const client = { first_name, last_name, street, city, zip, client_id, phone, mobile, email, notes, vet_name, vet_phone, route, route_name, lat, long }
+        let dogsPreFilter = forDogMap.map(dog => { return ({client_id:client_id, dog_name: dog.dog_name, image: dog.image, dog_id: dog.dog_id, dog_notes: dog.dog_notes, flag: dog.flag, regular: dog.regular, active: dog.active}) })
 
        const dogsResult = dogsPreFilter.filter(dog => dog.active === true)
        console.log ('dogs array?', dogsResult)
@@ -342,7 +356,7 @@ router.get('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 });
 
 router.get('/schedule/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-  // console.log('arrived in server get schedule route', req.params.id)
+  console.log('in api/clients/schedule', req.params.id)
   let clientId = req.params.id
   const queryText = `
             SELECT * FROM clients_schedule
@@ -368,7 +382,7 @@ router.get('/schedule/:id', rejectUnauthenticated, rejectUnauthorized, (req, res
 
 router.post('/schedule', rejectUnauthenticated, async (req, res) => {
 
-  console.log('one off change', req.body)
+  console.log('in api/clients/schedule', req.body)
 
   const client = await pool.connect();
   // const {date, is_scheduled, dog_id, client_id } = req.body
@@ -396,13 +410,14 @@ router.post('/schedule', rejectUnauthenticated, async (req, res) => {
     res.sendStatus(500);
   } finally {
     client.release()
+    console.log('client release')
   }
 });
 
 // Updating schedule changes
 router.put('/schedule/updated', rejectUnauthenticated, async (req, res) => {
 
-  // console.log('one off change', req.body)
+   console.log('one off change', req.body)
 
   const client = await pool.connect();
   // const {date, is_scheduled, dog_id, client_id } = req.body
@@ -431,7 +446,7 @@ router.put('/schedule/updated', rejectUnauthenticated, async (req, res) => {
 
 
 router.delete('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-  // console.log(req.params.id)
+  console.log('in DELETE api/client', req.params.id)
 
   const queryText = 'DELETE FROM clients WHERE id=$1';
   pool.query(queryText, [req.params.id])
@@ -443,7 +458,7 @@ router.delete('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 });
 
 router.put('/dogs/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-  // console.log(req.params.id)
+  console.log('in PUT api/client/dogs/:',req.params.id)
 
   const queryText = `
                 UPDATE dogs
@@ -460,7 +475,7 @@ router.put('/dogs/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) =>
 
 //route to edit regular schedule
 router.put('/schedule', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
-  // console.log('schedule as it arrives in server: ', req.body["1"])
+  console.log('schedule as it arrives in server: ', req.body["1"])
 
   const scheduleTxt = `
             UPDATE clients_schedule
@@ -484,9 +499,5 @@ router.put('/schedule', rejectUnauthenticated, rejectUnauthorized, async (req, r
     res.sendStatus(500);
   }
 });
-
-
-
-
 
 module.exports = router;

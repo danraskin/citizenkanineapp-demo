@@ -6,6 +6,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import FlagIcon from '@mui/icons-material/Flag';
 
+
 function RouteSelect() {
     // this screen gives an employee the option to select which route they are assigned for the day
     // it gives a snapshot of how many dogs are on the route, and shows their avatars on a card
@@ -55,10 +56,10 @@ function RouteSelect() {
                             <AvatarGroup>
                                 {dailyRoutes && dailyRoutes[route].map((dog, index) => (
 
-                                    <>
+                                    <div key={index}>
                                         {
                                             dog.image ?
-                                                <Avatar src={dog.image} key={index} />
+                                                <Avatar src={dog.image} />
                                                 :
                                                 <Avatar key={index}>
                                                     {dog.name[0]}
@@ -66,7 +67,7 @@ function RouteSelect() {
 
                                         }
 
-                                    </>
+                                    </div>
 
                                 ))}
                             </AvatarGroup>

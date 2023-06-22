@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { CSVLink } from "react-csv";
 import { Button, Box } from "@mui/material";
 import dayjs from 'dayjs';
@@ -6,9 +6,13 @@ import './CSVLink.css';
 // let localeData = require('dayjs/plugin/localeData');
 // dayjs.extend(localeData);
 
+// Component creates invoice object.
+//invoice objects can be downloaded as CSV, OR used to create QB invoices directly via the api/qb_services endpoint 
+
 const ExportCSV = ({ monthsShort }) => {
+    const dispatch = useDispatch();
     const invoiceItems = useSelector(store => store.invoiceReducer);
-    // console.log(invoiceItems);
+   // console.log(invoiceItems);
 
     const headers = [
         { label: 'InvoiceNo', key: 'InvoiceNo' },
@@ -26,7 +30,7 @@ const ExportCSV = ({ monthsShort }) => {
     const data = [];
     if (invoiceItems && invoiceItems.map) {
         for (let item of invoiceItems) {
-            console.log(item)
+            // data object exported as CSV
             data.push(
                 {
                     "InvoiceNo": item.clientid,
@@ -42,22 +46,38 @@ const ExportCSV = ({ monthsShort }) => {
                     "TaxRate": '8.03%'
                 }
             );
+            // item in invoiceItems sent in POST request to quickbooks for invoice creation
+            item.description = `${monthsShort[invoiceItems[0].month - 1]}: ${item.dates.map(date => (date))}`;
         }
     };
 
     return (
         <Box component="span">
             {invoiceItems && invoiceItems.map &&
+            <>
+            <Box sx={{display: 'block'}} >
                 <Button size="small" variant="contained" color="primary" sx={{ mx: 1, mt: 1 }}>
                     <CSVLink
-                        headers={headers}
-                        data={data}
-                        filename={`invoice_${data[0].InvoiceDate}.csv` || null}
-                        id='csvButton'
+                    headers={headers}
+                    data={data}
+                    filename={`invoice_${data[0].InvoiceDate}.csv` || null}
+                    id='csvButton'
                     >
-                        EXPORT
-                    </CSVLink>
+                        EXPORT CSV
+                   </CSVLink>
                 </Button>
+                <Button 
+                    onClick={
+                        e=>dispatch({type: 'CREATE_QB_INVOICE', payload: invoiceItems })
+                    }
+                    size="small"
+                    variant="contained"
+                    color="primary"
+                    sx={{ mx: 1, mt: 1 }}>
+                        EXPORT QB
+                </Button>
+            </Box>
+            </>
             }
         </Box>
 

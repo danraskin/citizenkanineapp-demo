@@ -1,4 +1,4 @@
-const dogEdit = (state = {dog_name: '', dog_notes: '', image: '', flag: false, regular: false}, action) => {
+const dogEdit = (state = {client_id: '', dog_name: '', dog_notes: '', image: '', flag: false, regular: false}, action) => {
     switch (action.type) {
         case 'SET_DOG_EDIT':
             return action.payload;
@@ -11,7 +11,7 @@ const dogEdit = (state = {dog_name: '', dog_notes: '', image: '', flag: false, r
         case 'SET_EDIT_REGULAR':
             return{...state, regular: action.payload}
         case 'CLEAR_EDIT_DOG':
-            return {dog_name: '', dog_notes: '', flag: false}
+            return {dog_name: '', dog_notes: '', flag: false, regular: false}
         default:
             return state;
     }

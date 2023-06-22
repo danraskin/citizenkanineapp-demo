@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import '../../Desktop.css';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-
 //COMPONENTS
 import ClientModal from '../ClientModal/ClientModal';
 
@@ -18,12 +17,19 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+
+const redirect = process.env.REACT_APP_REDIRECT;
+console.log(redirect);
+console.log(process.env)
+
+
 function ClientList() {
   const clientList = useSelector(store => store.clientsReducer);
   const dispatch = useDispatch();
 
   const [search, setSearch] = useState('')
   const [submittedSearch, setSubmittedSearch] = useState('')
+  const [imageSrc, setImageSrc] = useState('Images/qbButtonMed.png')
 
   //this route gets all clients to populate client list //
   useEffect(() => {
@@ -31,13 +37,18 @@ function ClientList() {
     dispatch({ type: 'CLEAR_MODALS'})
   }, []);
 
+  //starts OAuth process with QB
+  const connectQB = ()=>{
+    location.href = redirect;
+  }
+
   const openModal = (view) => {
     dispatch({ type: 'SET_CLIENT_MODAL', payload: view }); //assures the view to be the right component
     dispatch({ type: 'SET_MODAL_STATUS' });   //opens the modal
   }
 
   const fetchOneClient = (client) => {
-    console.log(client)
+    //console.log(client)
     dispatch({type: 'SET_CLIENT', payload: client })
     openModal('ClientDetails')
   }
@@ -58,7 +69,6 @@ function ClientList() {
   }
 
   const clientScheduleView = (client) => {
-    console.log('does it hit?')
     dispatch({ type: 'SET_CLIENT', payload: client })
     openModal('ClientSchedule')
   }
@@ -97,7 +107,7 @@ function ClientList() {
 
           <Button onClick={() => searchFunction()} variant="contained" color="secondary">Search</Button>
        }
-          <Button onClick={() => openModal('AddClient')} variant='contained' color="secondary">Add Client</Button>
+          <Button onClick={() => dispatch({ type: 'QUICKBOOKS_SYNC'})} variant='contained' color="secondary">QuickBooks Sync</Button>
        
       </Grid>
       <Grid container spacing={2}>
@@ -142,7 +152,7 @@ function ClientList() {
                         }
                       })
                       .map((client ) => (
-                        <StyledTableRow key={client.id} hover> 
+                        <StyledTableRow key={client.client_id} hover> 
                           <TableCell onClick={() => fetchOneClient(client)}>{client.first_name} {client.last_name}</TableCell>
                           <TableCell onClick={() => fetchOneClient(client)}>{client.dogs.map(dog => (dog.dog_name + ' '))}</TableCell>
                           <TableCell onClick={() => fetchOneClient(client)}>{client.phone}</TableCell>
@@ -158,7 +168,7 @@ function ClientList() {
                 :
                   <TableBody>
                     {clientList.map((client ) => (
-                        <StyledTableRow key={client.id} hover> 
+                        <StyledTableRow key={client.client_id} hover> 
                           <TableCell onClick={() => fetchOneClient(client)}>{client.first_name} {client.last_name}</TableCell>
                           <TableCell onClick={() => fetchOneClient(client)}>{client.dogs.map(
                            (dog, i) => (i === client.dogs.length-1 ? dog.dog_name : dog.dog_name + ' • '))}</TableCell>
@@ -178,9 +188,16 @@ function ClientList() {
             </Table>
           </TableContainer>
         </Grid>
-
+        <Grid item xs={12} sx={{ mr: 5, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button onClick={connectQB}>
+              <img 
+              src={imageSrc} alt="quickbooks logo"
+              onMouseEnter={() => setImageSrc('Images/qbButtonMedHover.png')}
+              onMouseOut={() => setImageSrc('Images/qbButtonMed.png')}/>
+            </Button>
+        </Grid>
+      
       </Grid>
-      {/* <Button onClick={() => openModal('ClientDetails')}>LISA FRANK - SPIKE, FIDO</Button>  opens client details */}
       <ClientModal /> {/* only open when button is pressed */}
     </Box>
   );

@@ -3,9 +3,7 @@ import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 const { palette } = createTheme();
 const font = "'Noto Sans', sans-serif";
 
-
 export const theme = createTheme({
-
   palette: {
     type: 'light',
     primary: {
@@ -17,6 +15,11 @@ export const theme = createTheme({
       main: '#53b0d1',
       contrastText: '#fbfaf8',
       dark: '#3f89a4',
+    },
+    tertiary: {
+      main: '#cfd8dc',
+      contrastText: '#37474f',
+      dark:'#808e95'
     },
     error: {
       main: '#e0923f',
@@ -50,7 +53,6 @@ export const theme = createTheme({
         fontSize: "2.5rem",
       },
   },
-
   breakpoints: {
     values: {
       xs: 0,
@@ -61,4 +63,5 @@ export const theme = createTheme({
       xl: 1536,
     },
   }
+
 });

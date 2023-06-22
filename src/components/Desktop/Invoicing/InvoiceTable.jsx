@@ -26,6 +26,7 @@ function InvoiceTable({ monthsShort }) {
     month = monthsShort[invoiceItems[0].month - 1];
   }
   dayjs().format('MM/DD/YYYY');
+  //console.log(invoiceItems)
 
   return (
     <Grid container spacing={2}>
@@ -43,19 +44,21 @@ function InvoiceTable({ monthsShort }) {
                 <TableCell sx={{ fontWeight: '800' }}>Total Cost:</TableCell>
               </TableRow>
             </TableHead>
+            {invoiceItems ?
             <TableBody>
-              {invoiceItems && invoiceItems.map && invoiceItems.map((item) => (
-                <StyledTableRow key={item.id} >
-                  <TableCell key={item.id} >{item.month}/{item.year}</TableCell>
-                  <TableCell key={item.id} >{item.first_name} {item.last_name}</TableCell>
-                  <TableCell key={item.id} >{item.service.service}</TableCell>
-                  <TableCell key={item.id} >{month}: {item.dates.map((date,i) => (i < item.dates.length-1 ? date + ', ': date))}</TableCell>
-                  <TableCell key={item.id} >{item.dates.length}</TableCell>
-                  <TableCell key={item.id} >{item.service.price}</TableCell>
-                  <TableCell key={item.id} >{item.service.price * item.dates.length}</TableCell>
+              {invoiceItems && invoiceItems.map && invoiceItems.map((item, i) => (
+                <StyledTableRow key={i} >
+                  <TableCell key={i+"1"} >{item.month}/{item.year}</TableCell>
+                  <TableCell key={i+"2"} >{item.first_name} {item.last_name}</TableCell>
+                  <TableCell key={i+"3"} >{item.service.service}</TableCell>
+                  <TableCell key={i+"4"} >{month}: {item.dates.map((date,i) => (i < item.dates.length-1 ? date + ', ': date))}</TableCell>
+                  <TableCell key={i+"5"} >{item.dates.length}</TableCell>
+                  <TableCell key={i+"6"} >{item.service.price}</TableCell>
+                  <TableCell key={i+"7"} >{item.service.price * item.dates.length}</TableCell>
                 </StyledTableRow>
-              ))}
+              ))} 
             </TableBody>
+                       : null } 
           </Table>
         </TableContainer>
       </Grid>

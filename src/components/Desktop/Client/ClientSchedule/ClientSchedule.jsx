@@ -13,6 +13,9 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import 'react-datepicker/dist/react-datepicker.css';
+const utc = require('dayjs/plugin/utc')
+dayjs.extend(utc);
+
 
 const isWeekend = (date) => {
   const day = date.day();
@@ -24,24 +27,27 @@ function ClientSchedule() {
   //use selectors and defining dispatch
   const dispatch = useDispatch();
   const client = useSelector(store => store.clientReducer)
-  // console.log(clientSchedule)
+  //console.log('what is client', client)
   // console.log(updatedSchedule)
   const dogs = client.dogs;
-  
-  
-  useEffect(() => {
-    dispatch({ type: 'FETCH_SCHEDULE', payload: client.id })
-    // Fetch client schedule changes
-    dispatch({ type: 'SAGA_FETCH_CLIENT_SCHEDULE_CHANGES', payload: client.id })
-  }, []);
-  
   const schedule = useSelector(store => store.clientScheduleReducer.clientSchedule)
   const clientSchedule = useSelector(store => store.clientScheduleReducer.editClientSchedule)
   const changes = useSelector(store=> store.clientScheduleReducer.clientScheduleChanges)
-  // console.log(dayjs(changes[0].date_to_change).$d)
-  ;  //local useState state I am using for this functionality
+  
+  
+  useEffect(() => {
+    dispatch({ type: 'FETCH_SCHEDULE', payload: client.client_id })
+    // Fetch client schedule changes
+    dispatch({ type: 'SAGA_FETCH_CLIENT_SCHEDULE_CHANGES', payload: client.client_id })
+     return () => {
+      dispatch({
+        type: 'CLEAR_SCHEDULE'
+      })
+    }
+  }, []);
+
+    //local useState state I am using for this functionality
   const [dog, setDog] = useState('');
-  // console.log(dog);
   const [scheduled, setScheduled] = useState('');
   
   const initialDate =()=> {
@@ -57,7 +63,7 @@ function ClientSchedule() {
   
   // THIS handles the change of the date based on the date picker
   const handleDateChange = (newValue) => {
-    console.log(newValue);
+    //console.log(newValue);
     setValue(newValue);
   }
   
@@ -71,12 +77,12 @@ function ClientSchedule() {
     let newChanges = [];
     if (dog === "all") {
       client.dogs.map(singleDog => {
-        let thisChange = { dog_id: singleDog.dog_id, client_id: client.id, date_to_change: changeDate, is_scheduled: scheduled }
+        let thisChange = { dog_id: singleDog.dog_id, client_id: client.client_id, date_to_change: changeDate, is_scheduled: scheduled }
         newChanges.push(thisChange)
       })
     }
     else {
-      let thisChange = { dog_id: dog, client_id: client.id, date_to_change: changeDate, is_scheduled: scheduled }
+      let thisChange = { dog_id: dog, client_id: client.client_id, date_to_change: changeDate, is_scheduled: scheduled }
       newChanges.push(thisChange)
     }
 
@@ -106,10 +112,12 @@ function ClientSchedule() {
   // weekly schedule stuff:
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const [disabled, setDisabled] = useState(true);
-  console.log('disabled', disabled)
+
 
   // This object will be dispatched when the weekly schedule has been updated;
 
+        /*February 2023: This feature has been turned off.  Quickbooks sync now
+        handles regular/ongoing schedule changes */
 
   const handleWeekScheduleChange =()=>{
     //dispatch updatedSchedule // this object included the client_id
@@ -122,14 +130,14 @@ function ClientSchedule() {
     setDisabled(!disabled);
   }
 
-  const DogAvatar=({dog,index, id, className})=>{
+  const DogAvatar=({dog, index,  dog_id, className})=>{
     return (
     <Avatar
         className={className}
-        key={id}
+        key={dog_id}
         sx={{width: '1.25vw', height: '1.25vw', mx: .25, fontSize: 13, border: 2, bgcolor: avatarColors[index], borderColor: avatarColors[index]}}
         alt={dog.dog_name[0]}
-        src={dog.image ? dog.image : null}
+        src={null} //removed image option since it does not look good on Heroku
     >
     {dog.dog_name[0]}
     </Avatar>)
@@ -149,7 +157,7 @@ function ClientSchedule() {
         {/* Grid containing weekly schedule */}
         <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }} >
           {daysOfWeek.map((day, index) => (
-            <Grid key={index + 1} item xs={2} sx={{ mt: 3 }} >
+            <Grid key={index + 1} item xs={2} sx={{ mt: 3, mb: 2 }} >
               <Card raised>
                 <CardActionArea component={Button}
                   disabled={disabled}
@@ -179,7 +187,9 @@ function ClientSchedule() {
               </Card>
             </Grid>
             ))}
-            { !disabled ?
+            {/* The below is turned off because client will no longer edit weekly schedule in app */}
+
+            {/* { !disabled ?
               <Grid item xs={11}  sx={{display: 'flex', justifyContent: 'right', mt: 1}}>
                 <Button variant="outlined" 
                   sx={{mr: 3}}
@@ -191,7 +201,7 @@ function ClientSchedule() {
             <Grid item xs={11} sx={{ display: 'flex', justifyContent: 'right', mt:1}}>
               <Button variant='contained' color='secondary' onClick={() => setDisabled(!disabled)}>Edit</Button>
             </Grid>
-          }
+          } */}
 
         </Grid>
       {/* Grid containing calendar and form */}
@@ -210,11 +220,8 @@ function ClientSchedule() {
                         }}
                   // renderDay is essentially mapping through each day in the selected month.
                   renderDay={(day, _value, DayComponentProps) => {
-                    console
-                    // console.log(JSON.stringify(DayComponentProps.day.$d))
-                    let thisDayString = JSON.stringify(DayComponentProps.day.$d)
+                    let thisDayString = dayjs(DayComponentProps.day).utc(true).format('YYYY-MM-DD');
                     let selectedMUIClass='';
-                    console.log()
                     if (day.$d === dayjs()){
                         selectedMUIClass ="MuiButtonBase-root MuiPickersDay-root Mui-selected MuiPickersDay-dayWithMargin css-bkrceb-MuiButtonBase-root-MuiPickersDay-root";
                       }
@@ -236,7 +243,6 @@ function ClientSchedule() {
                               <Box key={day.$D} sx={{display: 'flex', flexDirection: 'row', flexGrow: '8', flexWrap: 'wrap',width: '4.5vw', alignContent: 'flex-start', justifyContent:'center', mb: 0, pt: 1.5}}>
                                 <>
                                   {dogs.map((dog, index)=>{
-                                    // console.log(dog.dog_name, dog.regular)
                                     if (clientSchedule[day.$W]){
                                        // Regularly Scheduled Day
                                       // console.log(day.$W)
@@ -250,14 +256,14 @@ function ClientSchedule() {
 
                                       if (changes.length > 0){ // Changes on a regularly scheduled day
                                         // returns an object with the change for the day if there is one
-                                        let dogChange = changes.filter(change=>{
-                                          return change.dog_id === dog.dog_id && JSON.stringify(dayjs(change.date_to_change).$d) === thisDayString
+
+                                        let dogChange = changes.filter(change => {
+                                          return change.dog_id === dog.dog_id && change.date_to_change === thisDayString
                                         })
-                                        
+                                        // console.log('does dog change have no results?', dogChange)
                                         // console.log(typeof(dogChange))
                                         // if there is a change for the dog:
                                         if(dogChange.length > 0){
-                                          // console.log('there is a change', dogChange);
                                           let change = dogChange[0]
                                           if(dog.regular){
                                             if (change.is_scheduled){
@@ -286,10 +292,9 @@ function ClientSchedule() {
                                       // NOT REGULARLY SCHEDULED DAY
                                       if (changes.length > 0){
                                         for (let thisChange of changes){
-                                          
-                                          if (thisChange.dog_id === dog.dog_id && JSON.stringify(dayjs(thisChange.date_to_change).$d) === thisDayString && thisChange.is_scheduled){
+                                          if (thisChange.dog_id === dog.dog_id && thisChange.date_to_change === thisDayString && thisChange.is_scheduled){
                                             return (
-                                              <DogAvatar id={dog.dog_id} index={index} dog={dog}/>
+                                              <DogAvatar id={dog.dog_id} index={index} key={dog.dog_id} dog={dog}/>
                                             )
                                           }
                                         }
@@ -306,8 +311,6 @@ function ClientSchedule() {
               {/* END of CALENDAR */}
         </Box >
         </Grid>
-
-        
         {/* ADD One-Off Changes Form */}
               {addChange ? 
                 <Grid item xs={5} sx={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
@@ -356,10 +359,11 @@ function ClientSchedule() {
               }
           <Grid item xs={11} sx={{display: 'flex', justifyContent: 'right', pb: 3}}>
             <Button 
-            variant="outlined" color="info"
-            onClick={() => {
-                    dispatch({ type: 'SET_MODAL_STATUS' })}}>
-            Back</Button>
+              variant="outlined" color="info"
+              onClick={() => {
+                dispatch({ type: 'SET_CLIENT_MODAL', payload: 'ClientDetails' });}}>
+              Back
+            </Button>
           </Grid>
         </Grid>
     </>
