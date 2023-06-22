@@ -128,7 +128,7 @@ function Nav(props) {
           </Toolbar>
         )}
         {/*----------NAV TRANSITION----------*/}
-        <Box sx={{ height: '5%', width: '100%', bgcolor: '#e0923f' }}>
+        <Box sx={{ height: '5%', width: '100%', bgcolor: '#e0528f' }}>
           <Typography sx={{ color: 'transparent' }}>PACK CENTRAL</Typography>
         </Box>
       </AppBar>
