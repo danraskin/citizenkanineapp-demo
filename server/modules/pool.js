@@ -10,6 +10,7 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false
     },
     schema: config.SCHEMA
+
   };
 } else {
   configPool = {
