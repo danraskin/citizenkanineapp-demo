@@ -32,7 +32,14 @@ Key Features:
 
 Citizen Kanine currently relies on the production app for its daily operations. Its completed version was developed by myself ([Dan Raskin](https://github.com/danraskin)) and [Sam Freeman](https://github.com/sam-c-freeman). I am continuing to develop its features in collaboration with the company and its employees. The original prototype was built in a three-week sprint with a team of four other developers: [Sarah Preston](https://github.com/seprest1), [Blake Smith](https://github.com/blakesmithmn), [Yanira Hagstrom](https://github.com/YaniraHagstrom) and [Sam Freeman](https://github.com/sam-c-freeman) as a part of [Prime Digital Academy](www.primeacademy.io)
 
-Citizen Kanine 
+### How to check out the Citizen Kanine App
+[Click here](http://citizen-kanine-demo.herokuapp.com) to interact with a fully functional demo version of the Citizen Kanine App. The mobile views can be accessed your via your desktop by changing the screen size in your browser's Developer Tools, but it is designed be viewed on a mobile device!
+
+You will be prompted for authorization. submit the following:
+
+>username: admin
+>
+>password: admin
 
 
 ## Approach:
