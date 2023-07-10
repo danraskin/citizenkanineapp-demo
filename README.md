@@ -30,7 +30,7 @@ You will be prompted for authorization. submit the following:
 >
 >password: admin
 
-![home](./public/images/image0.png)
+![home](public/Images/image0.png)
 
 
 ## Approach:
