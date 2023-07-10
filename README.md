@@ -22,7 +22,7 @@ Key Features:
 Citizen Kanine currently relies on the production app for its daily operations. Its completed version was developed by myself ([Dan Raskin](https://github.com/danraskin)) and [Sam Freeman](https://github.com/sam-c-freeman). I am continuing to develop its features in collaboration with the company and its employees. The original prototype was built in a three-week sprint with a team of four other developers: [Sarah Preston](https://github.com/seprest1), [Blake Smith](https://github.com/blakesmithmn), [Yanira Hagstrom](https://github.com/YaniraHagstrom) and [Sam Freeman](https://github.com/sam-c-freeman) as a part of [Prime Digital Academy](www.primeacademy.io)
 
 ### How to check out the Citizen Kanine App
-[Click here](http://citizen-kanine-demo.herokuapp.com) to interact with a fully functional demo version of the Citizen Kanine App. The mobile views can be accessed your via your desktop by changing the screen size in your browser's Developer Tools, but it is designed be viewed on a mobile device!
+[Click here](http://citizen-kanine-demo.herokuapp.com) to interact with a fully functional demo version of the Citizen Kanine App. 
 
 You will be prompted for authorization. submit the following:
 
@@ -32,7 +32,7 @@ You will be prompted for authorization. submit the following:
 
 #### MOBILE VIEW
 
-On Mobile, this will take you the mobile home view:
+The mobile views can be accessed your via your desktop by changing the screen size in your browser's Developer Tools, but it is designed be viewed on a mobile device! Logging in as admin will take you the mobile home view:
 
 <img src="public/Images/image0.png" alt="mobile home screen" width="200"/>
 
@@ -53,6 +53,10 @@ Select an icon to open up the 'check-in' modal. This is how pack leaders check i
 <img src="public/Images/image4.png" alt="mobile home screen" width="200"/>
 
 Each dog must be identified as 'checked-in', 'no-show', or 'cancelled' individually. After checking in all dogs, click 'check-in all dogs.' This does not affect dog check-in in status, but it does change the icon color so that pack leaders can keep track of their pick-ups!
+
+#### ADMIN DASHBOARD
+
+Logging in as admin will take to the admin dashboard.
 
 ## Approach:
 
