@@ -30,8 +30,29 @@ You will be prompted for authorization. submit the following:
 >
 >password: admin
 
-![home](public/Images/image0.png)
+#### MOBILE VIEW
 
+On Mobile, this will take you the mobile home view:
+
+<img src="public/Images/image0.png" alt="mobile home screen" width="200"/>
+
+Select 'Routes,' scroll to the bottom, and select 'load balancing.'
+
+<img src="public/Images/image1.png" alt="mobile home screen" width="200"/>
+
+Turn the screen sideways as prompted to view the load balancing screen. Select the "edit" button on the top-right and explore the drag and drop function!
+
+<img src="public/Images/image2.png" alt="mobile home screen" width="400"/>
+
+Return the the "Routes" screen via the bottom nav-bar, and navigate to a route of your choice. Select the 'Map' button.
+
+<img src="public/Images/image3.png" alt="mobile home screen" width="200"/>
+
+Select an icon to open up the 'check-in' modal. This is how pack leaders check in dogs. (They can also do this in the previous 'Route view').
+
+<img src="public/Images/image4.png" alt="mobile home screen" width="200"/>
+
+Each dog must be identified as 'checked-in', 'no-show', or 'cancelled' individually. After checking in all dogs, click 'check-in all dogs.' This does not affect dog check-in in status, but it does change the icon color so that pack leaders can keep track of their pick-ups!
 
 ## Approach:
 
