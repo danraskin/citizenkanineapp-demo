@@ -14,20 +14,26 @@
 ![FORKS](https://img.shields.io/github/forks/citizenkanineapp/citizenkanineapp?style=social)
 
 # Citizen Kanine
-
-_Duration: Two Week Sprint_
-
   
+## Summary
 
-  ## Summary
-
-Citizen Kanine is a dog walking business based in Minneapolis - where each morning 'Pack Leaders' embark on a route to pick up dogs from client homes for their daily walk. On a typical day, the business walks 36+ dogs in small groups around Lake Harriet rain or shine. 
+[Citizen Kanine](https://thecitizenkanine.com/) is a dog-walking business based in Minneapolis. Each morning, 'Pack Leaders' pick up clients' dogs in along designated routes vans. On a typical day, the business walks 36+ dogs in small groups around Lake Harriet.
  
-Our goal was to provide a solution to Citizen Kanine that streamlined their workflow. Our solution contains two separate workflows: an admin dashboard and a mobile view for employees. The admin portal provides a centralized location for the client to manage employees, client information, client scheduling, as well as invoicing. This portal is estimated to save our client multiple hours a month on invoicing alone. The huge win is that our client shouldn't have to reference multiple sources of information to complete monthly invoices.
+This custom React web-application integrates the company's scheduling, invoicing, record-keeping, and communications functions. The app contains two separate workflows: an admin dashboard and a mobile view for employees. The admin portal provides a centralized location for our client to manage employee schedules, client information and scheduling and invoicing. The mobile view allows employees to manage the distribution of dogs along pick-up routes on a daily basis, as well efficiently checking in which dogs were walked each day.
 
-The mobile view allows employees to keep track of their schedules, and manage the distribution of dogs between Pack Leaders on a daily basis, as well as efficiently checking in dogs walked each day. The daily data recorded by dog walkers--which dogs were checked in as 'walked,' which dogs were unscheduled or day-of cancellations--is sent directly to a database table. This table is queried via the admin portal to create monthly invoices for each client. The mobile view came with the hurdle of displaying loads of information in a user friendly way on a small display. 
+Key Features:
 
-This project was a team effort -  built in its entirety over the course of two weeks as a part of [Prime Digital Academy](www.primeacademy.io).
+- Employees utilize a 'drag and drop' mobile interface to balance the daily load of dogs
+- Employees see the client location in a maps view, allowing single-screen navigation and dog check-ins.
+- App syncs client data with Citizen Kanine's Quickbooks account via the Quickbooks API
+- App creates formatted Quickbook invoices at the click of a button
+- Admin can view client history and submit changes to client schedules
+
+
+Citizen Kanine currently relies on the production app for its daily operations. Its completed version was developed by myself ([Dan Raskin](https://github.com/danraskin)) and [Sam Freeman](https://github.com/sam-c-freeman). I am continuing to develop its features in collaboration with the company and its employees. The original prototype was built in a three-week sprint with a team of four other developers: [Sarah Preston](https://github.com/seprest1), [Blake Smith](https://github.com/blakesmithmn), [Yanira Hagstrom](https://github.com/YaniraHagstrom) and [Sam Freeman](https://github.com/sam-c-freeman) as a part of [Prime Digital Academy](www.primeacademy.io)
+
+Citizen Kanine 
+
 
 ## Approach:
 
@@ -188,34 +194,6 @@ Since the app is not client facing at this time - there is no registration page.
  5. **Route Screen** -  once routes are set, and a user selects their assigned route on the route select page and is brought to a list view with tools for route management. Clicking on a line in the list of dogs will reveal the options available for a user. Here employees are able to mark a dog as 'checked in' or a 'no show', which will in turn update their list visually marking said dog off of the list. In this view, Admin level users are able to cancel a dog at no charge - in case they were accidentally still on the schedule for a given day. Clicking on a dog photo or avatar on the left side of the list will bring a user to Dog Details. (Section contains flags)
  6. **Dog Details** - this view shows relevant information for a specific dog and their client. Here is a centralized location for access protocols for client homes, notes on dog needs, emergency contact information, as well as photo upload for dog identification. (Section contains flags)
  7. **Account** - a form for users to change their password.
-
-## Developer Notes
-
-#### Quickbooks API/flexible invoice output
-
-  Given the opportunity to revisit this project - we would be interested in exploring Quickbooks API integration especially for Client Data and Invoice Item sync so that any changes made app-side will reflect on Quickbooks.
-
-  App does not allow customization of CSV output. Currently, dog walking history is formatted by server in invoice.router.js and sent to client. Invoice is itemized by invoice period (month), client, and service provided. Dog walking services are indexed in the "services" SQL table (database.SQL), and referenced by "id" in invoice.router.js.
-
-  App currently determines service provided to customer based on number of days scheduled listed per client in "client_schedule" table AND number of dogs walked per day of service. Prices are currently fixed in the table. If Citizen Kanine needs to adjust their prices or services, a Quickbooks sync function could update the "service" table based on Quickbooks 'items' list. Depending on the type of changes, it would be important to preserve service "id" position in "services" table.
-
-  Another possible solution is to add an updatable services menu, and to allow admin user to link customer directly to a 'base service' in on the 'client details' page. The advantage of these approaches would be A) allow admin user to interact with services list in the app and B) allow admin user to select 'friend and family' rate for a given customer.
-
-  A third change to invoicing functionality would be to bypass CSV export and directly create invoices using Quickbooks API.
-
-  The two hurdles with quickbooks integration are:
-  1) setting up two-factor authentication with Citizen Kanine account.
-  2) building a sandbox company with sample dataset and datastructure as close to the Citizen Kanine buisness account as possible
-
-#### Mapping routes and dog location
-  While we started exploring mapping for this project, it unfortunately did not fit into our timeline - this is a feature we think would be incredibly helpful for a visual of routes (for load balancing, and navigation). (Map API's / Providers listed below)
-
-  some effort towards mapping routes has been made in the 'map' branch. In this branch:
-  - "clients" table includes "lat" and "long" fields.
-  - add new and update client routes automatically populates table with coorinate data based on address (MapTiler).
-  - SQL queries in mobile.router need to updated to select "lat" and "long" for each client.
-  
-  Another area for exploration would be to attempt to develop step by step route directions for the employee - providing a streamlined pickup process for their morning. 
 
 ## Authors & Acknowledgement
 
