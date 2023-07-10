@@ -1,16 +1,5 @@
-
-
-
-  
-
 ![REPO SIZE](https://img.shields.io/github/repo-size/citizenkanineapp/citizenkanineapp?style=flat-square)
-
-  
-
 ![TOP_LANGUAGE](https://img.shields.io/github/languages/top/citizenkanineapp/citizenkanineapp?style=flat-square)
-
-  
-
 ![FORKS](https://img.shields.io/github/forks/citizenkanineapp/citizenkanineapp?style=social)
 
 # Citizen Kanine
@@ -40,6 +29,8 @@ You will be prompted for authorization. submit the following:
 >username: admin
 >
 >password: admin
+
+![home](./public/images/image0.png)
 
 
 ## Approach:
