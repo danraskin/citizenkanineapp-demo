@@ -50,7 +50,8 @@ Return the the "Routes" screen via the bottom nav-bar, and navigate to a route o
 
 <img src="public/Images/image3.png" alt="mobile home screen" width="200"/>
 
-Select an icon to open up the 'check-in' modal. This is how pack leaders check in dogs. (They can also do this in the previous 'Route view'). 
+Select an icon to open up the 'check-in' modal. This is how pack leaders check in dogs. (They can also do this in the previous 'Route view').
+
 <img src="public/Images/image4.png" alt="mobile home screen" width="200"/>
 
 Each dog must be identified as 'checked-in', 'no-show', or 'cancelled' individually. After checking in all dogs, click 'check-in all dogs.' This does not affect dog check-in in status, but it does change the icon color so that pack leaders can keep track of their pick-ups! Feel free to check in dogs. This data will be stored and viewable as tabulated client history in the Admin Dashboard 'Invoice Tool.'
