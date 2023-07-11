@@ -18,11 +18,12 @@ Key Features:
 - App creates formatted Quickbook invoices at the click of a button
 - Admin can view client history and submit changes to client schedules
 
-
 Citizen Kanine currently relies on the production app for its daily operations. Its completed version was developed by myself ([Dan Raskin](https://github.com/danraskin)) and [Sam Freeman](https://github.com/sam-c-freeman). I am continuing to develop its features in collaboration with the company and its employees. The original prototype was built in a three-week sprint with a team of four other developers: [Sarah Preston](https://github.com/seprest1), [Blake Smith](https://github.com/blakesmithmn), [Yanira Hagstrom](https://github.com/YaniraHagstrom) and [Sam Freeman](https://github.com/sam-c-freeman) as a part of [Prime Digital Academy](www.primeacademy.io).
 
+Check out the repo for the production version of the app [here](https://github.com/citizenkanineapp/citizenkanineapp).
+
 ### How to check out the Citizen Kanine App
-[Click here](http://citizen-kanine-demo.herokuapp.com) to interact with a fully functional demo version of the Citizen Kanine App. 
+[Click here](http://citizen-kanine-demo.herokuapp.com) to interact with a fully functional demo version of the Citizen Kanine App.
 
 You will be prompted for authorization. submit the following:
 
