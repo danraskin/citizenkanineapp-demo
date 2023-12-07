@@ -100,13 +100,6 @@ function ClientSchedule() {
       />
     );
   };
-  
-<<<<<<< HEAD
-  // THIS handles the change of the date based on the date picker
-  const handleDateChange = (newValue) => {
-    //console.log(newValue);
-    setValue(newValue);
-=======
 
   // adds or removes dates to the dateValues array.
   const handleDateChange = (date) => {
@@ -126,7 +119,6 @@ function ClientSchedule() {
       // console.log(index, valueArray);
     }
     setDateValues(valueArray);
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   }
   
   //This is for the submit button for the one off changes
@@ -142,15 +134,6 @@ function ClientSchedule() {
     let newChanges = [];
     if (dog === "all" && typeof scheduled === 'boolean') {
       client.dogs.map(singleDog => {
-<<<<<<< HEAD
-        let thisChange = { dog_id: singleDog.dog_id, client_id: client.client_id, date_to_change: changeDate, is_scheduled: scheduled }
-        newChanges.push(thisChange)
-      })
-    }
-    else {
-      let thisChange = { dog_id: dog, client_id: client.client_id, date_to_change: changeDate, is_scheduled: scheduled }
-      newChanges.push(thisChange)
-=======
         changeDates.map(date => {
           let thisChange = { dog_id: singleDog.dog_id, client_id: client.client_id, date_to_change: date, is_scheduled: scheduled }
           newChanges.push(thisChange);
@@ -161,7 +144,6 @@ function ClientSchedule() {
         let thisChange = { dog_id: dog, client_id: client.client_id, date_to_change: date, is_scheduled: scheduled }
         newChanges.push(thisChange);
       })
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
     }
 
     // if there are new changes, then post changes.
@@ -443,17 +425,6 @@ function ClientSchedule() {
                   <Button variant='contained' color='secondary' onClick={handleSubmit}> Submit</Button>
                   <Button variant="outlined" color="info" sx={{ml:3}} onClick={() => setAddChange(!addChange)}>Cancel</Button>
               </Grid>
-<<<<<<< HEAD
-              }
-          <Grid item xs={11} sx={{display: 'flex', justifyContent: 'right', pb: 3}}>
-            <Button 
-              variant="outlined" color="info"
-              onClick={() => {
-                dispatch({ type: 'SET_CLIENT_MODAL', payload: 'ClientDetails' });}}>
-              Back
-            </Button>
-          </Grid>
-=======
           </Grid>
         :
         <Grid item xs={5} sx={{display: 'flex', flexDirection:'column', alignItems:'center', mt: 10}}>
@@ -471,7 +442,6 @@ function ClientSchedule() {
               dispatch({ type: 'SET_CLIENT_MODAL', payload: 'ClientDetails' });}}>
             Back
           </Button>
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
         </Grid>
       </Grid>
     </>

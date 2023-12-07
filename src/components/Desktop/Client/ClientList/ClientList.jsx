@@ -19,17 +19,7 @@ const redirect = process.env.REACT_APP_REDIRECT;
 console.log(redirect);
 console.log(process.env)
 
-<<<<<<< HEAD
-
-const redirect = process.env.REACT_APP_REDIRECT;
-console.log(redirect);
-console.log(process.env)
-
-
-function ClientList() {
-=======
 export default function ClientList() {
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   const clientList = useSelector(store => store.clientsReducer);
   const dispatch = useDispatch();
 
@@ -45,8 +35,6 @@ export default function ClientList() {
     dispatch({ type: 'CLEAR_MODALS'})
   }, []);
 
-<<<<<<< HEAD
-=======
   const daysOfWeek = ['mon','tue','wed','thu','fri'];
 
   // creates flat list of all dogs for dog search feature
@@ -69,7 +57,6 @@ export default function ClientList() {
       }
   )))]
 
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   //starts OAuth process with QB
   const connectQB = ()=>{
     location.href = redirect;
@@ -80,17 +67,10 @@ export default function ClientList() {
     dispatch({ type: 'SET_MODAL_STATUS' });   //opens the modal
   }
 
-<<<<<<< HEAD
-  const fetchOneClient = (client) => {
-    //console.log(client)
-    dispatch({type: 'SET_CLIENT', payload: client })
-    openModal('ClientDetails')
-=======
   const searchDogByDay = (day) => {
     setSearch('');
     setSubmittedSearch('');
     setWeekSearch(day);
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   }
 
   const searchFunction = (event) => {
@@ -106,15 +86,7 @@ export default function ClientList() {
   const clearResults = (event) => {
     setSubmittedSearch('');
     setSearch('');
-<<<<<<< HEAD
-  }
-
-  const clientScheduleView = (client) => {
-    dispatch({ type: 'SET_CLIENT', payload: client })
-    openModal('ClientSchedule')
-=======
     setWeekSearch('');
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   }
 
 
@@ -151,12 +123,7 @@ export default function ClientList() {
 
         <Button onClick={() => searchFunction()} variant="contained" color="secondary">Search</Button>
        }
-<<<<<<< HEAD
-          <Button onClick={() => dispatch({ type: 'QUICKBOOKS_SYNC'})} variant='contained' color="secondary">QuickBooks Sync</Button>
-       
-=======
           <Button onClick={() => dispatch({ type: 'QUICKBOOKS_SYNC'})} variant='contained' color="secondary">QuickBooks Sync</Button>  
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
       </Grid>
       <Stack sx={{width: '70%',display:'flex', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
         { searchType === 'clients' ?
@@ -208,64 +175,6 @@ export default function ClientList() {
                   <TableCell></TableCell>
                 </TableRow>
               </TableHead>
-<<<<<<< HEAD
-              {submittedSearch ? 
-                <TableBody
-                    >  
-                    {clientList
-                      .filter((client) => {
-                        const firstName = client.first_name.toLowerCase()
-                        const lastName = client.last_name.toLowerCase()
-
-                        //loop through array of dog names and check those
-                        if (firstName.includes(submittedSearch)) {
-                          return true;
-                        }
-                        if (lastName.includes(submittedSearch)) {
-                          return true;
-                        }
-                        for(let dog of client.dogs){
-                          const dogName = dog.dog_name.toLowerCase()
-                          if(dogName.includes(submittedSearch)){
-                            return true;
-                          }
-                        }
-                      })
-                      .map((client ) => (
-                        <StyledTableRow key={client.client_id} hover> 
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.first_name} {client.last_name}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.dogs.map(dog => (dog.dog_name + ' '))}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.phone}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.email}</TableCell>
-                          <TableCell>
-                            <IconButton onClick={() => clientScheduleView(client)}>
-                              <CalendarMonthIcon sx={{ fontSize: 20, color: '#341341' }}/> 
-                            </IconButton>
-                          </TableCell>
-                        </StyledTableRow>
-                    ))}
-                  </TableBody>
-                :
-                  <TableBody>
-                    {clientList.map((client ) => (
-                        <StyledTableRow key={client.client_id} hover> 
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.first_name} {client.last_name}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.dogs.map(
-                           (dog, i) => (i === client.dogs.length-1 ? dog.dog_name : dog.dog_name + ' • '))}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.phone}</TableCell>
-                          <TableCell onClick={() => fetchOneClient(client)}>{client.email}</TableCell>
-                          <TableCell>
-                            <IconButton onClick={() => clientScheduleView(client)}>
-                              <CalendarMonthIcon sx={{ fontSize: 20, color: '#341341' }}/> 
-                            </IconButton>
-                          </TableCell>
-                        </StyledTableRow>
-                    ))}
-                
-                </TableBody>
-
-            }
-=======
               { searchType==='clients' ? 
                 (
                   (submittedSearch ) ?
@@ -284,7 +193,6 @@ export default function ClientList() {
                 ) : null
 
               }
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
             </Table>
           </TableContainer>
         </Grid>

@@ -160,11 +160,7 @@ function ClientDetails(){
                 size="small" 
                 InputProps={{readOnly: true, style: {fontWeight: '700', fontSize: "16px"}}}
                 />
-<<<<<<< HEAD
-              {client.email.includes(',') ?
-=======
               {client.email && client.email.includes(',') ?
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
                 <TextField
                 focused={false}
                 value={client.email} 

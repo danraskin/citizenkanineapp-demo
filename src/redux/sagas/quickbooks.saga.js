@@ -2,12 +2,9 @@ import axios from 'axios';
 import { put, takeLatest } from 'redux-saga/effects';
 import swal from 'sweetalert';
 
-<<<<<<< HEAD
-=======
 // redirect URL is env variable (.env-cmdrc) set during the build process;
 // this differentiates client-side redirects between different development environments
 
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 const redirect = process.env.REACT_APP_REDIRECT;
 
 function* createQbInvoice (action) {
@@ -48,17 +45,12 @@ function* addAllQbCustomers(action){
         yield put ({type: 'FETCH_CLIENTS'});
         
     } catch (error) {
-<<<<<<< HEAD
-       // console.log(error);
-        alert('Error adding QB customers. Try connecting to QB again');
-=======
         console.log(error.response);
         if (error.response.data.message) {
             alert (error.response.data.message)
         } else {
             alert('Error adding QB customers. Try connecting to QB again')
         }
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
     }
     
 }
@@ -98,17 +90,12 @@ function* updateAllQbCustomers(action){
                 const deleteClientsFromDB = yield axios.delete(`${urlQuery}`);
             }
         } catch (error) {
-<<<<<<< HEAD
-            console.log(error);
-            alert('Error updating QB customers!');
-=======
             console.log('response data', error.response.data);
             if (error.response.data.message) {
                 alert(error.response.data.message)
             } else {
                 alert('Error updating QB customers!');
             }
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
         }  
         //fetches clients from CK database
         // console.log('finished add/delete clients saga')

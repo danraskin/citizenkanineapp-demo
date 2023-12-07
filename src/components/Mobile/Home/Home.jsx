@@ -9,26 +9,6 @@ import MobileNav from '../MobileNav/MobileNav';
 function Home() {
   const history = useHistory();
   const user = useSelector(store => store.user);
-  const dailyDogsCheck = useSelector(store => store.dailyDogz);
-  const dispatch = useDispatch();
-
-  // on page load - populate the daily dogs table using day of the week and the scheduled dogs for the day
-  // useEffect(() => {
-  //   if (user.admin) {
-  //     dispatch({
-  //       type: 'POPULATE_DAILY_DOGS'
-  //     })
-  //   }
-
-
-  // }, [])
-
-  // in case the on page load fails - this runs on navigation to the routes page so that the daily dogs
-  // should be accessible 
-  // const adminTime = () => {
-  //   dispatch({ type: 'POPULATE_DAILY_DOGS' });
-  //   history.push('/m/routes');
-  // }
 
   return (
     <Grid container spacing={2} wrap="nowrap" sx={{ pb: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', width: '100%' }}>

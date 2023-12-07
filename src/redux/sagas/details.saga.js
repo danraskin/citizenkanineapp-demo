@@ -21,11 +21,7 @@ function* fetchDetails(action) {
 function* updateNote(action) {
     // single dog
     let dog = action.payload;
-<<<<<<< HEAD
-    let note = action.payload.note;
-=======
     // let note = action.payload.note;
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
    // console.log('DOG TO UPDATE IS:', dog, note);
 
     try {

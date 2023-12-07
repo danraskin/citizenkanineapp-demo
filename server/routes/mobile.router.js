@@ -45,25 +45,6 @@ router.get('/daily', async (req, res) => {
             break;
         case 1:
             console.log('Monday');
-<<<<<<< HEAD
-            searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
-            break;
-        case 2:
-            console.log('Tuesday');
-            searchQuery += 'WHERE "2" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
-            break;
-        case 3:
-            console.log('Wednesday');
-            searchQuery += 'WHERE "3" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
-            break;
-        case 4:
-            console.log('Thursday');
-            searchQuery += 'WHERE "4" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
-            break;
-        case 5:
-            console.log('Friday');
-            searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
-=======
             searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
             break;
         case 2:
@@ -81,7 +62,6 @@ router.get('/daily', async (req, res) => {
         case 5:
             console.log('Friday');
             searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
             break;
         case 6:
             searchQuery = null;

@@ -19,15 +19,9 @@ const {
 /**
  * GET route for admin notes
  */
-<<<<<<< HEAD
-router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
-// console.log('arrived in server get admin notes route')
-let adminId = req.user.id
-=======
 router.get('/', rejectUnauthenticated, (req, res) => {
 // console.log('arrived in server get admin notes route')
 // let adminId = req.user.id
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   const queryText = `
     SELECT admin_notes.id, admin_notes.user_id, admin_notes.notes, admin_notes.date, admin_notes.note_type, dogs.name, clients.last_name FROM admin_notes
       LEFT JOIN dogs
@@ -45,17 +39,8 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 // const queryValues = [adminId]
 pool.query(queryText)
     .then(result => {
-<<<<<<< HEAD
-   
-    // console.log('result from query?', result.rows)
-
-
-        res.send(result.rows);
-   
-=======
       // console.log(result.rows);
       res.send(result.rows);
->>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
     })
     .catch(err => {
         console.log('Error getting admin notes');
