@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 import { Map, Marker, Overlay } from "pigeon-maps"
 import { maptiler } from 'pigeon-maps/providers'
 
-
 import DogCheckinModal from './DogCheckinModal';
 
 //MUI
@@ -22,18 +21,22 @@ function MapView() {
   // const user = useSelector(store => store.user);
   const [open, setOpen] = useState(false);
   const [modalData, setModalData] = useState(false);
+  const [markers, setMarkers] = useState([])
+  const history = useHistory();
+  const route = useSelector(store => store.routeReducer)
+
+  
+  const thisRoute = route[0].route_id
+  //May need to update the below map key in the future 
+  const maptilerProvider = maptiler('WjRnaGgNsm0nHmNUpFSq', 'bright') 
+  
   const handleOpen = (text) => {
     console.log(text)
     setModalData(text)
     setOpen(true);
   } 
-  
-  const route = useSelector(store => store.routeReducer)
-  const thisRoute = route[0].route_id
-  //May need to update the below map key in the future 
-  const maptilerProvider = maptiler('WjRnaGgNsm0nHmNUpFSq', 'bright') 
-  const [markers, setMarkers] = useState([])
-  const history = useHistory();
+
+
   
   /*This function handles the logic to populate markers */
   const populateMarkers = () => {
