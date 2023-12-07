@@ -10,7 +10,6 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false
     },
     schema: config.SCHEMA
-
   };
 } else {
   configPool = {
@@ -24,8 +23,12 @@ if (process.env.DATABASE_URL) {
 // this creates the pool that will be shared by all other modules
 const pool = new pg.Pool(configPool);
 
-pool.on('connect',(client)=> {
+pool.on('connect',async (client)=> {
   client.query(`SET search_path TO ${configPool.schema}, public`);
+  // for development testing!
+  if (!process.env.PORT) {
+    client.query(`SET TIMEZONE='UTC'`);
+  }
 });
 
 // the pool with emit an error on behalf of any idle clients

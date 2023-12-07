@@ -16,7 +16,11 @@ const {
 /**
  * GET all clients and their dogs
  */
+<<<<<<< HEAD
 router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
+=======
+router.get('/', rejectUnauthenticated, (req, res) => {
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   console.log('in GET api/clients')
   const queryText = `
                     SELECT clients.first_name, clients.id as client_id, clients.qb_id, clients.last_name, clients.notes, clients.phone, clients.mobile, clients.email, clients.lat, clients.long, routes.id as route,
@@ -229,8 +233,13 @@ router.put('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
 
 //route to edit dog
 router.put('/dogs', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
+<<<<<<< HEAD
    console.log('dogs have id?', req.body)
    console.log(typeof(req.body.regular))
+=======
+  //  console.log('dogs have id?', req.body)
+  //  console.log(typeof(req.body.regular))
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   const { dog_name, dog_notes, flag, regular, dog_id } = req.body
 
   const dogTxt = `
@@ -301,7 +310,11 @@ router.get('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
   const queryValues = [clientId]
   pool.query(queryText, queryValues)
     .then(result => {
+<<<<<<< HEAD
        console.log('how to target schedule?', result.rows[0])
+=======
+      //  console.log('how to target schedule?', result.rows[0])
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
       // console.log(result.rows[0][1])
 
       //all IDs from database
@@ -382,7 +395,11 @@ router.get('/schedule/:id', rejectUnauthenticated, rejectUnauthorized, (req, res
 
 router.post('/schedule', rejectUnauthenticated, async (req, res) => {
 
+<<<<<<< HEAD
   console.log('in api/clients/schedule', req.body)
+=======
+  console.log('in api/clients/schedule')
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 
   const client = await pool.connect();
   // const {date, is_scheduled, dog_id, client_id } = req.body
@@ -415,6 +432,7 @@ router.post('/schedule', rejectUnauthenticated, async (req, res) => {
 });
 
 // Updating schedule changes
+<<<<<<< HEAD
 router.put('/schedule/updated', rejectUnauthenticated, async (req, res) => {
 
    console.log('one off change', req.body)
@@ -443,6 +461,37 @@ router.put('/schedule/updated', rejectUnauthenticated, async (req, res) => {
     client.release()
   }
 });
+=======
+// No This is a duplicate function to /schedule. ON CONFLICT handled the same situation.
+// router.put('/schedule/updated', rejectUnauthenticated, async (req, res) => {
+
+//    console.log('in api/client/sschedule/updated for one off change')
+
+  // const client = await pool.connect();
+  // // const {date, is_scheduled, dog_id, client_id } = req.body
+  // // const schedule = req.body
+  // try {
+  //   await client.query('BEGIN')
+  //   await Promise.all(req.body.map(change => {
+  //     const scheduleTxt = `
+  //                         UPDATE dogs_schedule_changes
+  //                         SET is_scheduled = $1
+  //                         WHERE dog_id = $2 AND date_to_change = $3;
+  //                         `
+  //     const scheduleValues = [change.is_scheduled, change.dog_id, change.date_to_Change]
+  //     return client.query(scheduleTxt, scheduleValues)
+  //   }));
+  //   await client.query('COMMIT')
+  //   res.sendStatus(201);
+  // } catch (error) {
+  //   await client.query('ROLLBACK')
+  //   console.log('Error in post route for schedule changes', error);
+  //   res.sendStatus(500);
+  // } finally {
+  //   client.release()
+  // }
+// });
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 
 
 router.delete('/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {

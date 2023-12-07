@@ -74,8 +74,13 @@
 
 /* removes the option to select the year */
 /* .empCalendar .css-1tkx1wf-MuiSvgIcon-root-MuiPickersCalendarHeader-switchViewIcon{ */
+<<<<<<< HEAD
 .empCalendar div button > svg.MuiSvgIcon-root {
     display: flex !important;
+=======
+.empCalendar div button > svg.MuiPickersCalendarHeader-switchViewIcon {
+    display: none !important;
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 }
 
 

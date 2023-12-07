@@ -4,12 +4,12 @@ CREATE SCHEMA IF NOT EXISTS ck_stage;
 DROP TABLE IF EXISTS ck_stage.daily_dogs;
 DROP TABLE IF EXISTS ck_stage.dogs_schedule_changes;
 DROP TABLE IF EXISTS ck_stage.clients_schedule;
+DROP TABLE IF EXISTS ck_stage.admin_notes;
 DROP TABLE IF EXISTS ck_stage.dogs;
 DROP TABLE IF EXISTS ck_stage.clients;
 DROP TABLE IF EXISTS ck_stage.routes;
 DROP TABLE IF EXISTS ck_stage.employees_schedule;
 DROP TABLE IF EXISTS ck_stage.employees_schedule_changes;
-DROP TABLE IF EXISTS ck_stage.admin_notes;
 DROP TABLE IF EXISTS ck_stage."user";
 DROP TABLE IF EXISTS ck_stage.employees;
 DROP TABLE IF EXISTS ck_stage.services;
@@ -162,8 +162,11 @@ CREATE TABLE ck_stage.clients (
 	"long" VARCHAR (100)
 	);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 CREATE TABLE ck_stage.dogs (
 	"id" SERIAL PRIMARY KEY,
 	"client_id" INT NOT NULL REFERENCES ck_stage.clients(id) ON DELETE CASCADE,
@@ -215,11 +218,22 @@ CREATE TABLE ck_stage.daily_dogs (
 	"checked_in" BOOLEAN DEFAULT NULL,
 	"no_show" BOOLEAN DEFAULT NULL,
 	"cancelled" BOOLEAN DEFAULT NULL,
+<<<<<<< HEAD
+=======
+	"index" SERIAL,
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 	UNIQUE ("dog_id", "date")
 	);
 
 CREATE TABLE ck_stage.admin_notes (
 	"id" SERIAL PRIMARY KEY,
 	"user_id" INT NOT NULL REFERENCES ck_stage."user"(id) ON DELETE CASCADE,
+<<<<<<< HEAD
 	"notes" VARCHAR
+=======
+	"notes" VARCHAR,
+	"date" DATE DEFAULT CURRENT_DATE,
+	"note_type" VARCHAR(8),
+	"dog_id" INT REFERENCES ck_stage.dogs(id) ON DELETE CASCADE
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 	);

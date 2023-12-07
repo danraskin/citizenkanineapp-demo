@@ -80,6 +80,8 @@ function EmployeeSchedule(){
   // {1: true, 2: true, 3: false, 4: true, 5: true, id: 1, week: 2, first_name: 'Den', last_name: 'Paolini', email: 'dpaolini0@paypal.com', phone: '(840)6732127', …}
 
   const avatarColors = ['#4A5061', '#539BD1', '#7BCEC8', '#F9CB78', '#F5A572', '#F37E2D', '#F8614D', '#4A5061', '#539BD1', '#7BCEC8', '#F9CB78', '#F5A572', '#F37E2D', '#F8614D' ];
+  const avatarColors2 = ['#808590', '#87b8df', '#a3ddd9', '#fbdba1', '#f9c8aa', '#f7a56c', '#fa9082', '#808590', '#87b8df', '#a3ddd9', '#fbdba1', '#f9c8aa', '#f7a56c', '#FA9082' ];
+
   // console.log(dayjs());
 
 
@@ -178,6 +180,7 @@ function EmployeeSchedule(){
           {/* calendar here */}
           <Card variant="outlined" sx={{bgcolor: '#FCF4EB', height: '76vh'}}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
+<<<<<<< HEAD
               <StaticDatePicker
                 className='empCalendar'
                 disableHighlightToday={false}
@@ -303,6 +306,138 @@ function EmployeeSchedule(){
                                       }
                                       else{
                                         return null
+=======
+                    <StaticDatePicker
+                        className='empCalendar'
+                        disableHighlightToday={false}
+                        orientation="portrait"
+                        openTo="day"
+                        value={value} // not being used
+                        shouldDisableDate={isWeekend}
+                        onChange={(newValue) => { // not being used but required
+                        setValue(newValue);
+                        }}
+                        renderInput={(params) => {
+                        // console.log(dayjs());
+                        <TextField key={day.$D} {...params}  />
+                        }}
+                        // render day loops through the days in the month and performs the given function. 
+                        renderDay={(day, _value, DayComponentProps) => {
+                            //let thisDayString = dayjs(DayComponentProps.day).format('YYYY-MM-DD');
+                            let thisDayString = dayjs(DayComponentProps.day).utc(true).format('YYYY-MM-DD');
+
+                           // console.log(thisDayString);
+                            // console.log(DayComponentProps );
+                            const currentYear = DayComponentProps.day.$y;
+                            // dayjs calculates weeks in year as a decimal that rounds up so the calculation for weekInYear accounts for this issue. Without this, the last week of the year would be week 53 and the first week of the year would be 1 which are both odd and would render an incorrect schedule. 
+                            const weekInYear = day.diff(`${currentYear}-01-01`, 'week', false)
+                            return (
+                                <Box key={day.$d} className="dayBox"  sx={{display: 'flex', flexDirection: 'column', alignContent: 'flex-start', width: '8vw', height: '7vw', justifyContent: 'center', border: 1, borderColor: '#7BCEC8'}}>
+                                  {/* This box is just for the date number */}
+                                  <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                                    <PickersDay {...DayComponentProps} sx={{display: 'flex', alignContent: 'flex-start'}}/>
+                                  </Box>
+
+                                  {/* CONDITIONAL RENDERING FOR EMPLOYEE EVEN/ODD WEEKS */}
+                                  {/* is the day within the current month and is this week even(2)? */}
+                                  {!DayComponentProps.outsideCurrentMonth?
+                                    <>
+                                      {weekInYear % 2 !== 0  ? // odd week (week1)
+                                        <Box sx={{display:'flex', flexDirection: 'row', flexGrow: '7', justifyContent: 'center', alignContent: 'flex-start', flexWrap: 'wrap'}}>
+                                        {oddEmpSchedules && oddEmpSchedules.map((employee, index) => {
+                                          // if it's a regularly scheduled day and there is an add request, render the employee
+                                          if (employee[day.$W]){
+                                            // check to see if there are any changes for this employee on this day
+                                            const empChange = changes.filter(change=> {
+                                              return employee.emp_id === change.emp_id && change.date_to_change === thisDayString
+                                            })
+
+                                            
+                                            // if there are changes for this emp on this day
+                                            if (empChange.length > 0){
+                                              if(empChange[0].is_scheduled){
+                                                return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: avatarColors[index], height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                              }
+                                              else{
+                                                return null
+                                              }
+                                            }
+                                            //  no changes for this employee and is a regularly scheduled day
+                                            else{
+                                              let bgColor = avatarColors[index];
+                                              return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: bgColor, height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                            }
+                                            
+                                          }// NOT a regularly scheduled day=> check for changes.
+                                          if (!employee[day.$W]){
+                                            // check to see if there are any changes for this employee on this day
+                                            const empChange = changes.filter(change=> {
+                                              return employee.emp_id === change.emp_id && change.date_to_change === thisDayString
+                                            })
+                                            // if there are changes for this emp on this day
+                                            if (empChange.length > 0){
+                                              if(empChange[0].is_scheduled){
+                                                let bgColor = avatarColors[index];
+                                                return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: bgColor, height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                              }
+                                              else{
+                                                return null
+                                              }
+                                            }
+                                          }
+                                        })}
+                                        </Box>
+                                        // END OF ODD WEEK LOGIC
+                                        :
+                                        // even week (week2)
+                                        <Box sx={{display:'flex', flexDirection: 'row', flexGrow: '7', justifyContent: 'center', alignContent: 'flex-start', flexWrap: 'wrap'}}>
+                                        {evenEmpSchedules && evenEmpSchedules.map((employee, index) => {
+                                          // if it's a regularly scheduled day and there is an add request, render the employee
+                                          if (employee[day.$W]){
+                                            // check to see if there are any changes for this employee on this day
+                                            // console.log(thisDayString);
+                                            const empChange = changes.filter(change=> {
+                                              return employee.emp_id === change.emp_id && change.date_to_change === thisDayString
+                                            })
+
+                                            // if there are changes for this emp on this day
+                                            if (empChange.length > 0){
+                                              let bgColor = avatarColors2[index];
+                                              if(empChange[0].is_scheduled){
+                                                return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: bgColor, height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                              }
+                                              else{
+                                                return null
+                                              }
+                                            }
+                                            //  no changes for this employee and is a regularly scheduled day
+                                            else{
+                                              let bgColor = avatarColors2[index];
+                                              return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: bgColor, height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                            }
+                                            
+                                          }// NOT a regularly scheduled day=> check for changes.
+                                          if (!employee[day.$W]){
+                                            // check to see if there are any changes for this employee on this day
+                                            const empChange = changes.filter(change=> {
+                                              return employee.emp_id === change.emp_id && change.date_to_change === thisDayString
+                                            })
+                                            // if there are changes for this emp on this day
+                                            if (empChange.length > 0){
+                                              
+                                              // console.log('there is a change on', thisDayString)
+                                              if(empChange[0].is_scheduled){
+                                                let bgColor = avatarColors2[index];
+                                                return <Avatar key={employee.emp_id} sx={{ display: 'flex', bgcolor: bgColor, height: '2.25vw' , width: '2.25vw', fontSize: 10, mx: .25, mb: .5, alignSelf:'flex-start' }}>{employee.first_name[0]}{employee.last_name[0]}</Avatar>
+                                              }
+                                              else {
+                                                return null
+                                              }
+                                            }
+                                          }
+                                        })}
+                                        </Box>
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
                                       }
                                     }
                                   }

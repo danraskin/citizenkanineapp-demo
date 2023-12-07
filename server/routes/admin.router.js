@@ -19,22 +19,43 @@ const {
 /**
  * GET route for admin notes
  */
+<<<<<<< HEAD
 router.get('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
 // console.log('arrived in server get admin notes route')
 let adminId = req.user.id
+=======
+router.get('/', rejectUnauthenticated, (req, res) => {
+// console.log('arrived in server get admin notes route')
+// let adminId = req.user.id
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
   const queryText = `
-            SELECT * FROM admin_notes
-                WHERE user_id = $1;
+    SELECT admin_notes.id, admin_notes.user_id, admin_notes.notes, admin_notes.date, admin_notes.note_type, dogs.name, clients.last_name FROM admin_notes
+      LEFT JOIN dogs
+      ON admin_notes.dog_id = dogs.id
+      LEFT JOIN clients
+      ON dogs.client_id = clients.id
+        ORDER BY date DESC
+    ;
   `
-const queryValues = [adminId]
-pool.query(queryText, queryValues)
+  //no reason to filter admin notes by user
+  // const queryText = `
+  //           SELECT * FROM admin_notes
+  //               WHERE user_id = $1;
+  // `
+// const queryValues = [adminId]
+pool.query(queryText)
     .then(result => {
+<<<<<<< HEAD
    
     // console.log('result from query?', result.rows)
 
 
         res.send(result.rows);
    
+=======
+      // console.log(result.rows);
+      res.send(result.rows);
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
     })
     .catch(err => {
         console.log('Error getting admin notes');
@@ -45,20 +66,22 @@ pool.query(queryText, queryValues)
 /**
  * POST route for admin notes
  */
- router.post('/', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
+ router.post('/', rejectUnauthenticated, (req, res) => {
+  const today = new Date()
+  today.setUTCHours(today.getUTCHours() - 5)
     // console.log('does this get to server?', req.body)
     // console.log('who is user?', req.user.id)
     const {notes} = req.body
     const user = req.user.id
-
+    console.log('in /admin/', notes);
     try{
     const noteTxt = `
               INSERT INTO admin_notes 
-                ("user_id", "notes") 
+                ("user_id", "notes", "note_type", "dog_id", "date") 
                 VALUES
-                ($1, $2) ;
+                ($1, $2, $3, $4, $5) ;
     `
-    const notesValues = [user, notes]
+    const notesValues = [user, notes.notes, notes.note_type, notes.dog_id, today]
     pool.query(noteTxt, notesValues)
     res.sendStatus(201);
     } catch (error) {
@@ -79,6 +102,19 @@ pool.query(queryText, queryValues)
         console.log('Error completing delete admin notes');
         res.sendStatus(500);
       });
+  });
+
+  // sending note to packleaders
+
+  router.put('/send/:id', rejectUnauthenticated, rejectUnauthorized, (req, res) => {
+  
+    const queryText = `UPDATE admin_notes SET note_type = 'topack' WHERE id=$1`
+    pool.query(queryText, [req.params.id])
+      .then(()=> { res.sendStatus(200); })
+      .catch((err) => {
+        console.log('Error changing note type in order to send note to packleaders');
+        res.sendStatus(500);
+      })
   });
 
 

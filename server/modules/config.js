@@ -7,6 +7,6 @@ const configEnv = {
   "production": "../../config.json"
 }
 const config = require(configEnv[nodeEnv]);
-console.log('node_env: ', nodeEnv, configEnv[nodeEnv]); 
+console.log('node_env: ', nodeEnv); 
 
 module.exports = config;

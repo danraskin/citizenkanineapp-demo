@@ -1,42 +1,43 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useState, useEffect, useRef } from "react";
+// imports
+
+import { useSelector } from 'react-redux';
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Map, Marker, Overlay } from "pigeon-maps"
+import { Map, Marker } from "pigeon-maps"
 import { maptiler } from 'pigeon-maps/providers'
 
+// import component
 import DogCheckinModal from './DogCheckinModal';
 
 //MUI
 import {IconButton, Typography, Grid,} from '@mui/material';
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 
 function MapView() {
+
+  // populates markers on component load
   useEffect(() => {
     populateMarkers()
   }, [])
 
-  // const dispatch = useDispatch();
-  // const user = useSelector(store => store.user);
+  // function, state, and reducer definitions
+  const history = useHistory(); // for page routing
+  const route = useSelector(store => store.routeReducer) // grabs route data from route reducer
   const [open, setOpen] = useState(false);
   const [modalData, setModalData] = useState(false);
   const [markers, setMarkers] = useState([])
-  const history = useHistory();
-  const route = useSelector(store => store.routeReducer)
-
   
-  const thisRoute = route[0].route_id
-  //May need to update the below map key in the future 
-  const maptilerProvider = maptiler('WjRnaGgNsm0nHmNUpFSq', 'bright') 
-  
-  const handleOpen = (text) => {
-    console.log(text)
-    setModalData(text)
+  // sets modal data and opens client marker modal
+  const handleOpen = (data) => {
+    setModalData(data)
     setOpen(true);
   } 
+  
+  const thisRoute = route[0].route_id 
 
-
+  //May need to update the below map key in the future, probably should not be hard-coded in here.
+  const maptilerProvider = maptiler('WjRnaGgNsm0nHmNUpFSq', 'bright') 
   
   /*This function handles the logic to populate markers */
   const populateMarkers = () => {
@@ -60,7 +61,7 @@ function MapView() {
         let preClient= group[uniqueIds[i]]
         const { client_name,  street, zip, client_id, lat, long } = preClient[0];
         const client = {client_name, street, zip, client_id, lat, long}
-        let dogsPreFilter = preClient.map(dog => { return ({dog_name: dog.name, dog_id: dog.dog_id, checked_in: dog.checked_in, no_show: dog.no_show, cancelled: dog.cancelled}) })
+        let dogsPreFilter = preClient.map(dog => { return ({route_id: thisRoute, dog_name: dog.name, dog_id: dog.dog_id, checked_in: dog.checked_in, no_show: dog.no_show, cancelled: dog.cancelled}) })
         client.dogs = dogsPreFilter;
           
         // assigns initial checkin status; determines if all dogs are cancelled.
@@ -150,8 +151,8 @@ function MapView() {
         </Grid>
         <Grid item sx={{ width: '100%', height: '45rem' }}>
           <Map provider={maptilerProvider} defaultCenter={[44.914450, -93.304140]} defaultZoom={13}>
-            {/*this modal opens to display more details  */}
-            <DogCheckinModal route={route} modalData={modalData} setModalData={setModalData} setMarkers={setMarkers} markers={markers} open={open} setOpen={setOpen}/>
+            {/* this modal opens to display more details  */}
+            <DogCheckinModal route={route} modalData={modalData} setMarkers={setMarkers} open={open} setOpen={setOpen}/>
             {markers.filter(marker => marker.checkinStatus != null).map((oneMarker, i) => (
               <Marker 
                 width={50} 

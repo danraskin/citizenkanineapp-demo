@@ -117,7 +117,7 @@ function* getRoutes() {
 function* getRouteDetails(action) {
    // console.log('GETTING ROUTE:', action.payload);
     const routeID = Number(action.payload);
-
+    // console.log('route id in getRouteDetails saga', action.payload, routeID)
     try {
         const routeResult = yield axios({
             method: 'GET',
@@ -129,9 +129,7 @@ function* getRouteDetails(action) {
     } catch (error) {
         console.log('ERROR GETTING ROUTE', error);
     }
-
 }
-
 
 function* updateRoute(action) {
    // console.log('UPDATING ROUTE', action.payload)
@@ -160,7 +158,10 @@ function* updateRoute(action) {
     }
 
    // console.log('ROUTE NUMBER IS:', routeID);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 
     try {
         const updatedDog = yield axios({
@@ -180,6 +181,7 @@ function* populateDailyDogs(action) {
 
     try {
         const populatedDogs = yield axios.get('/api/mobile/daily');
+        yield put({type: 'GET_DAILY_ROUTES' });
     } catch (error) {
         console.log('Daily Dogs only generates on Weekdays - More than likely that is why you are seeing this error or daily dogs have already populated for today!', error);
     }
@@ -197,7 +199,6 @@ function* updateStatus(action) {
             url: `/api/mobile/daily`,
             data: dog
         })
-
         yield put({ type: 'GET_ROUTE_DETAILS', payload: routeID })
 
        // console.log('CHANGED');
@@ -205,20 +206,51 @@ function* updateStatus(action) {
     } catch (error) {
         console.log('ERROR UPDATING DOG STATUS', error);
     }
-
+    
 }
 
+function* updateDogOrderInRoute(action) {
+    // called by onDrageEnd() in Route.jsx
+    //accepts results from dragndrop and a copy of route state.
+    const result = action.payload.result;
+    const state = action.payload.route;
+    
+    //this function might be dirty dirty extra. pulled from dailyDogz.js reducer function 'MOVE_DOG', which modifies state.
+    const oldRouteName = result.source.droppableId;
+    const oldRouteArray = state;
+    const oldIndex = result.source.index;
+    const newIndex = result.destination.index;
 
+    console.log(result);
+    console.log(oldRouteName, oldRouteArray,  oldIndex, newIndex);
 
+    const reorderedRoute = Array.from(oldRouteArray); //creates shallow copy of array
+    const [dogToReorder] = reorderedRoute.splice(oldIndex, 1); //removes dog from original index
+    reorderedRoute.splice(newIndex, 0, dogToReorder); //adds dog to new index
+    reorderedRoute.forEach((dog, i) => dog.index = i);
+    reorderedRoute.sort((a,b)=>a.index - b.index);
+    console.log('reordered', reorderedRoute);
+
+    try {
+        yield axios({
+            method: 'PUT',
+            url: `/api/mobile/allDogs`,
+            data: reorderedRoute
+        })
+        yield put({ type: 'GET_ROUTE_DETAILS', payload: state[0].route_id })
+
+    } catch (error) {
+        console.log('ERROR UPDATING DOG ORDER', error);
+    }
+}
 
 function* RouteSaga() {
     yield takeLatest('GET_DAILY_ROUTES', getRoutes);
     yield takeLatest('UPDATE_ROUTE', updateRoute);
     yield takeLatest('GET_ROUTE_DETAILS', getRouteDetails);
     yield takeLatest('POPULATE_DAILY_DOGS', populateDailyDogs);
-    yield takeLatest('NO_SHOW', updateStatus);
     yield takeLatest('CHECK_IN', updateStatus);
-    yield takeLatest('CANCEL_WALK', updateStatus);
+    yield takeLatest('UPDATE_DOG_ORDER', updateDogOrderInRoute);
 }
 
 export default RouteSaga;

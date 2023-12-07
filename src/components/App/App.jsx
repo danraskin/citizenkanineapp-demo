@@ -30,6 +30,8 @@ import LoadBalancing from '../Mobile/LoadBalancing/LoadBalancing';
 import MobileNav from '../Mobile/MobileNav/MobileNav';
 import DogDetails from '../Mobile/DogDetails/DogDetails';
 import MobileTopNav from '../Mobile/MobileNav/MobileTopNav';
+import MobileNotes from '../Mobile/Notes/MobileNotes';
+import MobileDogSearch from '../Mobile/Search/MobileDogSearch';
 //MISC COMPONENTS
 import ImageUpload from '../AllPages/ImageUpload/ImageUpload';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
@@ -98,7 +100,7 @@ function App() {
             <ProtectedRoute exact path="/schedule">
               {user.admin ? <EmployeeSchedule /> : <Redirect to="/home" />}
             </ProtectedRoute>
-
+            
             <ProtectedRoute exact path="/clients">
               {user.admin ? <ClientList /> : <Redirect to="/home" />}
             </ProtectedRoute>
@@ -132,6 +134,16 @@ function App() {
               <WalkerSchedule />
             </ProtectedRoute>
 
+            <ProtectedRoute exact path="/m/notes">
+              <MobileTopNav />
+              <MobileNotes />
+            </ProtectedRoute>
+
+            <ProtectedRoute exact path="/m/search">
+              <MobileTopNav />
+              <MobileDogSearch />
+            </ProtectedRoute>
+
             <ProtectedRoute exact path="/m/routes">
               <MobileTopNav />
               <RouteSelect />
@@ -163,7 +175,6 @@ function App() {
           </Switch>
           {user.id ?
             <MobileNav />
-
             :
             null
           }

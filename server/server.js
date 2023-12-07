@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
+const config = require('./modules/config');
 
 const app = express();
 
@@ -65,7 +66,16 @@ app.use(express.static('build'));
 // App Set //
 const PORT = process.env.PORT || 5000;
 
+//TZ SET FOR DEVELOPMENT PURPOSES
+if (!process.env.PORT) {process.env.TZ = 'Etc/GMT'};
+
 /** Listen * */
 app.listen(PORT, () => {
-  console.log(`Listening on port: ${PORT}`);
+  console.log(`Listening on port: ${PORT}, connecting to db schema ${config.SCHEMA}`);
+  // logs for confirming timezone issues in development
+  if (!process.env.PORT) {
+    console.log('timzone is: ', process.env.TZ)
+    console.log(`Current Sever Time: ${new Date().toString()}`);
+    console.log(`Current client time: ${new Date().toLocaleString('en-US', { timeZone: 'Etc/GMT+5' })}`);
+  }
 });

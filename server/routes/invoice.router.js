@@ -1,3 +1,5 @@
+// module imports
+
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
@@ -10,11 +12,22 @@ const {
     rejectUnauthorized,
 } = require('../modules/authorization-middleware');
 
+// API endpoint https://this_app/api/invoice/
+// get client data by clientId, month and year
 router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
     console.log('in /api/invoice');
+<<<<<<< HEAD
     const client = await pool.connect();
 
+=======
+    // connect to postgres database pool
+    // this is confusing: this 'client' object refers to postgres database connection;
+    // otherwise, 'client' refers to citizen kanine clients.
+    const client = await pool.connect();
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
     // console.log(req.query)
+    
+    // extract search parameters from request
     const searchClientId = req.query.clientId;
     //console.log('client id?', searchClientId)
     const searchMonth = req.query.month;
@@ -24,8 +37,9 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
     const querySchedule = `SELECT * FROM clients_schedule`;
     const queryServices = `SELECT * FROM services`;
 
-    // use in case of client ALL
+    // set searchQuery
     if (searchClientId != 0) {
+        // use in case of client ALL
         searchQuery = `
             WHERE
                 clients.id = $1 AND
@@ -46,13 +60,15 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
 
     // console.log(searchQuery);
 
-    // query returns data object of each walk instance by customer-date
+    // expanded SQL query
+    // query returns data object of each walk instance by customer-date query parameters
     const queryWalkDetails = `
     SELECT
         clientid,
         qb_id,
         first_name,
         last_name,
+        email,
         num_dogs,
         ARRAY_AGG (
             EXTRACT (DAY FROM date)
@@ -64,6 +80,10 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
         SELECT
             clients.id AS clientid,
             clients.qb_id,
+<<<<<<< HEAD
+=======
+            clients.email AS email,
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
             daily_dogs.date,
             COUNT(dogs.id) AS num_dogs,
             daily_dogs.checked_in AS checked_in,
@@ -82,6 +102,7 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
                 daily_dogs.date,
                 checked_in,
                 no_show,
+                email,
                 last_name,
                 first_name,
                 clientid
@@ -94,19 +115,30 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
         qb_id,
         first_name,
         last_name, 
+        email,
         num_dogs,
         checked_in,
         no_show;
     `;
 
     try {
+<<<<<<< HEAD
         const resServices = await client.query(queryServices)
         const services = resServices.rows;
          //console.log(services);
+=======
+        // get list of SERVICES (walk frequencies and their rates) from database
+        const resServices = await client.query(queryServices)
+        const services = resServices.rows;
+         //console.log(services);
+
+         // get all client service history from 'daily_dogs' table by customer-date query parameters
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
         const resDetails = await client.query(queryWalkDetails, searchTerms);
         const invoiceData = resDetails.rows;
          //console.log('invoiceData', invoiceData);
 
+<<<<<<< HEAD
         const resSchedule = await client.query(querySchedule);
         const schedules = resSchedule.rows;
          //console.log('schedules', schedules)
@@ -128,22 +160,35 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
 
 
 
+=======
+        // get clients' schedules
+        const resSchedule = await client.query(querySchedule);
+        const schedules = resSchedule.rows;
+         //console.log('schedules', schedules)
+
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
         //adds service data to invoice data object.
         for (let item of invoiceData) {
             let serviceId
             //console.log(item);
 
-            // adds walks per week to invoice item
+            // this for loop evaluates the services *actually* provided to each client
             for (let client of schedules) {
                 // console.log('client.id: ', client.client_id, "item.clientid: ", item.clientid);
                 if (client.client_id === item.clientid) {
                     const values = Object.values(client);
+                    // walks is the number of times clients' dogs have been walked per week.
                     const walks = values.filter(i => i === true).length;
                     if (client.client_id === 19) { console.log(walks)}
 
                 /*
                     grabs services ID from services list. 
+<<<<<<< HEAD
                     These areprimary key id value of each service in service table (see: database.sql).
+=======
+                    These are primary key id value of each service in service table
+                    (see: database.sql).
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
                     If table changes, these will need to be fixed.
 
                     id   Group Dog Walking:{service}
@@ -155,7 +200,10 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
                     6:   Walk 2 dogs 5 days / week
                     7:   Walk 3 dogs
                     8: 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
                 */
                 
                     // if one dog is walked "walks" times per week:
@@ -192,11 +240,17 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
                         serviceId = 8;
                     }
                 }
+<<<<<<< HEAD
 
             }
             console.log('in walks/week', item.clientid, serviceId);
             
+=======
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
 
+            }
+            console.log('in walks/week', item.clientid, serviceId);
+            
             // adds service details to invoice item
             for (let service of services) {
                 if (service.id === serviceId) {
@@ -218,10 +272,18 @@ router.get('/', rejectUnauthenticated, rejectUnauthorized, async (req, res) => {
         //console.log(invoiceData);
 
         if (invoiceData[0]) {
+<<<<<<< HEAD
             //console.log(invoiceData)
             res.send(invoiceData);
         } else {
             res.sendStatus(204) //Sam added this
+=======
+            //sends invoice data if there are any invoices
+            //console.log(invoiceData)
+            res.send(invoiceData);
+        } else {
+            res.sendStatus(204)
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
         }
     } catch (error) {
         console.log('Error GET /api/invoice', error);

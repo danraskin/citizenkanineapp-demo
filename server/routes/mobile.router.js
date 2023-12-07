@@ -22,8 +22,11 @@ router.get('/daily', async (req, res) => {
 
     // hit the route
     // logic to populate daily dogs if there is nothing for the day?
-    var today = new Date()
-    var weekday = {};
+    const today = new Date()
+    today.setUTCHours(today.getUTCHours() - 5)
+    console.log('server time is', new Date().toString())
+    console.log('client time is',today)
+    const weekday = {};
     weekday.number = today.getDay();
     console.log('NUMBER IS:', weekday.number);
     // weekday = "Saturday"
@@ -42,6 +45,7 @@ router.get('/daily', async (req, res) => {
             break;
         case 1:
             console.log('Monday');
+<<<<<<< HEAD
             searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
             break;
         case 2:
@@ -59,6 +63,25 @@ router.get('/daily', async (req, res) => {
         case 5:
             console.log('Friday');
             searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id;';
+=======
+            searchQuery += 'WHERE "1" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
+            break;
+        case 2:
+            console.log('Tuesday');
+            searchQuery += 'WHERE "2" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
+            break;
+        case 3:
+            console.log('Wednesday');
+            searchQuery += 'WHERE "3" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
+            break;
+        case 4:
+            console.log('Thursday');
+            searchQuery += 'WHERE "4" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
+            break;
+        case 5:
+            console.log('Friday');
+            searchQuery += 'WHERE "5" = TRUE AND dogs.active = TRUE AND dogs.regular = TRUE ORDER BY route_id, client_id;';
+>>>>>>> 3c819fd968d62af287bc36dee209a0e30ceda776
             break;
         case 6:
             searchQuery = null;
@@ -70,61 +93,40 @@ router.get('/daily', async (req, res) => {
 
     // SQL to grab schedule adjustments table
     const scheduleQuery = `
-    SELECT dogs_schedule_changes.*, dogs.name from dogs_schedule_changes
+    SELECT dogs_schedule_changes.*, dogs.name, clients.route_id from dogs_schedule_changes
 		JOIN dogs ON dogs_schedule_changes.dog_id = dogs.id
-	    WHERE dogs_schedule_changes.date_to_change = CURRENT_DATE
+        JOIN clients ON dogs.client_id = clients.id
+	    WHERE dogs_schedule_changes.date_to_change = $1
 	ORDER BY dogs_schedule_changes.dog_id;
     `
 
     try {
         await client.query('BEGIN');
 
-        // const dailyDogs = adjustedDogs.map(dog => {
-        //     final = {
-        //         name: dog.name,
-        //         dog_id: dog.dog_id,
-        //         client_id: dog.client_id,
-        //         route_id: dog.route_id
-        //     };
-        // })
-        // add client ID 
-        const insertSQL = `
-        INSERT INTO daily_dogs
-            ("dog_id", "route_id", "client_id", "name")
-        VALUES
-            ($1, $2, $3, $4)
-       
-        `
-
-        // ON CONFLICT ("dog_id", "date")
-        // DO UPDATE 
-        //     SET "dog_id" = $1,
-        //         "route_id" = $2,
-        //         "client_id"=$3,
-        //         "name" = $4;
-
         // find the dogs default scheduled for the day
         const scheduledDogsResponse = await client.query(searchQuery);
         const scheduledDogs = scheduledDogsResponse.rows;
-        console.log(scheduledDogs);
+        // console.log(scheduledDogs);
         // scheduled dogs is an array of objects - of the dogs originally scheduled for the day.
 
         // find the schedule changes for the day
-        const scheduleAdjustmentsResults = await client.query(scheduleQuery);
+        const scheduleAdjustmentsResults = await client.query(scheduleQuery,[today]);
         const scheduleAdjustments = scheduleAdjustmentsResults.rows;
-        console.log(scheduleAdjustments);
+        // console.log(scheduleAdjustments);
 
         // if there are no changes - add original array to daily_dogs
         if (scheduleAdjustments.length < 1) {
             console.log('Good to Go no adjustments!');
             // insert into daily_dogs
+            // console.log(scheduledDogs);
             await Promise.all(scheduledDogs.map(dog => {
                 const insertQuery = `INSERT INTO daily_dogs ("dog_id", "route_id", "client_id", "name") VALUES ($1, $2, $3, $4);`;
                 const insertValues = [dog.dog_id, dog.route_id, dog.client_id, dog.name];
-                return client.query(insertSQL, insertValues);
+                return client.query(insertQuery, insertValues);
             }));
 
-            await client.query('COMMIT')
+            await client.query('COMMIT');
+            console.log('daily dogs committed');
             res.send({ scheduledDogs });
         } else {
 
@@ -133,27 +135,33 @@ router.get('/daily', async (req, res) => {
                 .filter(item => item.is_scheduled === false)
                 .map(item => item.dog_id);
 
-            // adjusted dogs is the original dog array MINUS the canceled dogs for the day
+            // adjustedDogs is the original dog array MINUS the canceled dogs for the day. there is a possibility for duplicate values to end up in additions!
             const adjustedDogs = scheduledDogs.filter(item => !cancellations.includes(item.dog_id));
 
             // here are the dogs that were added for the day that typically might not be scheduled
             const additions = scheduleAdjustments.filter(item => item.is_scheduled === true);
 
+            // returns TRUE if id matches dog.dog_id in adjustedDogs
+            const checkDogId = (id, array) => {
+                return array.some(dog => dog.dog_id === id);
+            }
+
             for (let item of additions) {
-                // hard code route to be 'unassigned'
-                item.route_id = 5;
-                adjustedDogs.push(item);
+                if (!checkDogId(item.dog_id,adjustedDogs)) {
+                    adjustedDogs.push(item);
+                }
             }
 
             console.log('Good to Go with adjustments!');
             // insert into daily_dogs
             await Promise.all(adjustedDogs.map(dog => {
-                const insertQuery = `INSERT INTO daily_dogs ("dog_id", "route_id", "client_id", "name") VALUES ($1, $2, $3, $4)`;
-                const insertValues = [dog.dog_id, dog.route_id, dog.client_id, dog.name];
-                return client.query(insertSQL, insertValues);
+                const insertQuery = `INSERT INTO daily_dogs ("dog_id", "route_id", "client_id", "name", "date") VALUES ($1, $2, $3, $4, $5)`;
+                const insertValues = [dog.dog_id, dog.route_id, dog.client_id, dog.name, today];
+                return client.query(insertQuery, insertValues);
             }));
 
-            await client.query('COMMIT')
+            await client.query('COMMIT');
+            console.log('daily dogs committed');
             res.send({ adjustedDogs });
 
         }
@@ -169,6 +177,8 @@ router.get('/daily', async (req, res) => {
 
 // GET ROUTE FOR EMPLOYEE ROUTES
 router.get('/route/:route_id', async (req, res) => {
+    const today = new Date()
+    today.setUTCHours(today.getUTCHours() - 5)
     let route = req.params.route_id;
 
     // routes need to be arrays of dog objects ...
@@ -181,11 +191,11 @@ router.get('/route/:route_id', async (req, res) => {
 		ON daily_dogs.route_id = routes.id
 	JOIN clients
 		ON daily_dogs.client_id = clients.id
-	    WHERE daily_dogs.date = CURRENT_DATE AND daily_dogs.route_id = $1
-	ORDER BY clients.id;
+	    WHERE daily_dogs.date = $2 AND daily_dogs.route_id = $1
+	ORDER BY daily_dogs.index;
     `
 
-    const routeValue = [route];
+    const routeValue = [route, today];
 
     pool.query(routeQuery, routeValue)
         .then(routeResponse => {
@@ -200,6 +210,8 @@ router.get('/route/:route_id', async (req, res) => {
 });
 
 router.get('/routes', async (req, res) => {
+    const today = new Date()
+    today.setUTCHours(today.getUTCHours() - 5)
     const routesQuery = `
     SELECT daily_dogs.*, dogs.flag, dogs.notes, dogs.image, routes.name AS route, clients.lat, clients.long, clients.street, clients.zip from daily_dogs
 	JOIN dogs
@@ -208,11 +220,11 @@ router.get('/routes', async (req, res) => {
 		ON daily_dogs.route_id = routes.id
     JOIN clients
         ON daily_dogs.client_id = clients.id
-	WHERE daily_dogs.date = CURRENT_DATE
-    ORDER BY dogs.client_id;
+	WHERE daily_dogs.date = $1
+    ORDER BY daily_dogs.index;
     `
 
-    pool.query(routesQuery)
+    pool.query(routesQuery,[today])
         .then(allRoutesRes => {
             let dailyRoutes = allRoutesRes.rows;
             // console.log('daily routes test', dailyRoutes)
@@ -228,9 +240,11 @@ router.get('/dog/:dogID', async (req, res) => {
     const dogID = req.params.dogID;
 
     const dogDetailsQuery = `
-    SELECT dogs.*, dogs.notes AS dog_notes, dogs.id AS dog_id, clients.*, clients.notes AS client_protocol from dogs
+    SELECT dogs.*, dogs.notes AS dog_notes, dogs.id AS dog_id, clients.*, clients_schedule."1" AS mon, clients_schedule."2" AS tue, clients_schedule."3" AS wed, clients_schedule."4" AS thu, clients_schedule."5" AS fri, clients.notes AS client_protocol from dogs
 	    JOIN clients
 		    ON dogs.client_id = clients.id
+        JOIN clients_schedule
+            ON dogs.client_id = clients_schedule.client_id
 	    WHERE dogs.id = $1;
     `
     const dogDetailsValue = [dogID];
@@ -238,6 +252,7 @@ router.get('/dog/:dogID', async (req, res) => {
     pool.query(dogDetailsQuery, dogDetailsValue)
         .then(detailsResults => {
             const dogDetails = detailsResults.rows[0];
+            // console.log(dogDetails)
             res.send(dogDetails);
         }).catch((error => {
             console.log('/dog/:id error getting dog details:', error);
@@ -246,6 +261,8 @@ router.get('/dog/:dogID', async (req, res) => {
 
 
 router.put('/routes', async (req, res) => {
+    const today = new Date()
+    today.setUTCHours(today.getUTCHours() - 5)
     // expect an object being sent over for the put request?
     // pull out relevant dog ID and route ID
     const dogID = req.body.dogID;
@@ -253,8 +270,8 @@ router.put('/routes', async (req, res) => {
 
     console.log('DOG ID & ROUTE ID', dogID, routeID);
 
-    const updateQuery = `UPDATE daily_dogs SET "route_id" = $1 WHERE "dog_id" = $2 AND daily_dogs.date = CURRENT_DATE`;
-    const updateValues = [routeID, dogID];
+    const updateQuery = `UPDATE daily_dogs SET "route_id" = $1 WHERE "dog_id" = $2 AND daily_dogs.date = $3`;
+    const updateValues = [routeID, dogID, today];
 
     pool.query(updateQuery, updateValues)
         .then(changeResults => {
@@ -267,6 +284,8 @@ router.put('/routes', async (req, res) => {
 
 // UPDATE A DOG's STATUS
 router.put('/daily', async (req, res) => {
+    const today = new Date()
+    today.setUTCHours(today.getUTCHours() - 5)
     // expect an object being sent over for the put request?
     // pull out relevant dog ID and route ID
     const dogID = req.body.id;
@@ -274,11 +293,10 @@ router.put('/daily', async (req, res) => {
     const noShow = req.body.no_show;
     const cancelled = req.body.cancelled;
 
+    // console.log('UPDATED DOG', dogID, checkedIn, noShow, cancelled);
 
-    console.log('UPDATED DOG', dogID, checkedIn, noShow, cancelled);
-
-    const updateQuery = `UPDATE daily_dogs SET "checked_in" = $1, "no_show" = $2, "cancelled" = $3 WHERE "dog_id" = $4 AND daily_dogs.date = CURRENT_DATE`;
-    const updateValues = [checkedIn, noShow, cancelled, dogID];
+    const updateQuery = `UPDATE daily_dogs SET "checked_in" = $1, "no_show" = $2, "cancelled" = $3 WHERE "dog_id" = $4 AND daily_dogs.date = $5`;
+    const updateValues = [checkedIn, noShow, cancelled, dogID, today];
 
     pool.query(updateQuery, updateValues)
         .then(changeResults => {
@@ -296,7 +314,7 @@ router.put('/notes', async (req, res) => {
     const dogID = req.body.id;
     const note = req.body.note;
 
-    console.log('UPDATED DOG', dogID, note);
+    // console.log('UPDATED DOG', dogID, note);
 
     const updateQuery = `UPDATE dogs SET "notes" = $2 WHERE "id" = $1`;
     const updateValues = [dogID, note];
@@ -318,7 +336,7 @@ router.put('/photos', async (req, res) => {
     const dogID = req.body.dogID;
     const photo = req.body.data;
 
-    console.log('UPDATED DOG', dogID, photo);
+    // console.log('UPDATED DOG', dogID, photo);
 
     const updateQuery = `UPDATE dogs SET "image" = $2 WHERE "id" = $1`;
     const updateValues = [dogID, photo];
@@ -333,56 +351,15 @@ router.put('/photos', async (req, res) => {
 })
 
 
-
-
-
-// PUT ROUTE TO UPDATE DOG ROUTES FOR THE DAY
-// if it's a put per move it's this:
+// PUT ROUTE TO UPDATE DOG INDICES IN DAILY DOG FOR ROUTE REORDERING
 router.put('/allDogs', async (req, res) => {
     const client = await pool.connect();
-
-    // what is the req.body?
-    console.log(req.body);
-
-    // example SQL query for an update ... this would only be for one dog, and would have two separate values we change
-    // in the route_id and the dog_id ... i figured the dog_id is more easily accessible than the actual table row key
-
-    // Need to look into a DB connection promises thing
-    // const sqlQuery = `
-    // UPDATE daily_dogs
-    // SET 
-    // 	"route_id" = 3
-    // WHERE "dog_id" = 3;
-    // `
-
-    // TAKES IN AN ARRAY THAT LOOKS LIKE THIS
-    //    {
-    //     "dogs": [
-    //         {
-    //             "dog_id":3,
-    //             "route_id":2
-    //         },
-    //          {
-    //             "dog_id":5,
-    //             "route_id":2
-    //         },
-    //         {
-    //             "dog_id":18,
-    //             "route_id":2
-    //         }
-    //     ]
-    //     }
-
     try {
-        // expect req.body to be an array of dogs 
-        // inner objects should be {dog_id: #, route_id: #}
-        const dogs = req.body.dogs;
-
         await client.query('BEGIN')
 
-        await Promise.all(dogs.map(dog => {
-            const updateQuery = `UPDATE daily_dogs SET "route_id" = $1 WHERE "dog_id" = $2`;
-            const updateValues = [dog.route_id, dog.dog_id];
+        await Promise.all(req.body.map(dog => {
+            const updateQuery = `UPDATE daily_dogs SET "index" = $1 WHERE "dog_id" = $2 AND "date" = $3` ;
+            const updateValues = [dog.index, dog.dog_id, dog.date];
             return client.query(updateQuery, updateValues);
         }));
 
