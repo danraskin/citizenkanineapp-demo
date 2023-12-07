@@ -24,7 +24,7 @@ My client asked to me reproduce a function originally performed in the [Route co
 - child of [Route](https://github.com/danraskin/citizenkanineapp-demo/blob/main/src/components/Mobile/Route/Route.jsx) and [DogCheckinModal](https://github.com/danraskin/citizenkanineapp-demo/blob/main/src/components/Mobile/MapView/DogCheckinModal.jsx)
 - lines 19-39: function sets dog status and dispatches to saga function. Saga function updates database.
 - lines 41-76: resuable UI
-- CheckIn refactored from Route (see [this older branch](https://github.com/danraskin/citizenkanineapp-demo/blob/OAuth2-setup-sam/src/components/Mobile/Route/Route.jsx) for comparison)
+- CheckIn refactored from Route (see [this older branch](https://github.com/citizenkanineapp/citizenkanineapp/blob/OAuth2-setup-sam/src/components/Mobile/Route/Route.jsx) for comparison)
 - ^^^ (old branch) lines 73-102: three separate 'set dog status' functions
 - ^^^ (old branch) lines 202-235: old UI integrated into component
 
@@ -36,12 +36,11 @@ My client asked to me reproduce a function originally performed in the [Route co
 - These two features rely on awareness of React-component state variables passed from MapView.
 
 ## 2. Bugfixes in legacy code
-This app syncs its database to our client's Quickbooks Online account. My customer noticed that the app was breaking when they were trying to update the database with new customer data from Quickboks, and I discovered a gap in our input validation. My client had forgotten to add 'street' and 'city' data for a new customer. I added input validation and a custom error message to alert user that some customer fields in quickbooks account need updating.
+This app syncs its database to clients' Quickbooks Online account. My client noticed that the app was breaking when they were trying to update the database with new customer data from Quickboks, and I discovered a gap in our input validation. They had forgotten to fill in 'street' and 'city' field for a new customer. I added input validation and a custom error message to alert user that some customer fields in their Quickbooks account need updating.
 
 ### [quickbooks.router](https://github.com/danraskin/citizenkanineapp-demo/blob/main/server/routes/quickbooks.router.js)
-- line 56: function filters customer data in to return to client
 - lines 226-247: input validation in after recieving customer data via quickbooks api
-- lines 244-245: custom error message sent to [do i even have this file?](https://blah.org)
+- lines 244-245: custom error message sent as response to client.
 - lines 208-222, 243: input validation is necessary to get coordinate data via geocoder api
 
 ## 3. DB/SQL-related backend
@@ -63,11 +62,11 @@ During the second development phase, I led the App's integration with quickbooks
 
 ## 5. Collaborative Process and Design
 
-This section is related to a different project; [Air Quality Spike Alerts](https://github.com/SpikeAlerts). My contributions to this project have been the implementation of cloud hosting solutions and, importantly, project organization. Most of the code displayed here was written by the main developer. However, the structural changes that have been made between the [development repo](https://github.com/SpikeAlerts/SpikeAlerts_Dev) and the current [production version](https://github.com/SpikeAlerts/SpikeAlerts_Heroku) followed directly from my approach to setting the project up for production.
+This section is related to a different project; [Air Quality Spike Alerts](https://github.com/SpikeAlerts). My contributions to this project have been the implementation of cloud hosting solutions and, importantly, project organization. Most of the code displayed here was written by my collaborator, the main developer. However, the structural changes that have been made between the [development repo](https://github.com/SpikeAlerts/SpikeAlerts_Dev) and the current [production version](https://github.com/SpikeAlerts/SpikeAlerts_Heroku) followed directly from my approach to setting the project up for production.
 
-### [Initiate database functions](https://github.com/SpikeAlerts/SpikeAlerts_Heroku/blob/main/App/modules/db_init.py)
-When I joined the project, the functions that seeded the database with geographic boundaries were organized in [jupyter notebook files](https://github.com/SpikeAlerts/SpikeAlerts_Dev/tree/main/Notebooks/1_Initialize_Database), which are used for data analysis and visualization, not production processes. 
-- I re-organized notebook functions into separate module
+### [Database initiation](https://github.com/SpikeAlerts/SpikeAlerts_Heroku/blob/main/App/modules/db_init.py)
+When I joined the project, the functions that seeded the database with geographic coordinates setting the project boundary were organized in [jupyter notebook files](https://github.com/SpikeAlerts/SpikeAlerts_Dev/tree/main/Notebooks/1_Initialize_Database), which are used for data analysis and visualization, not production processes. 
+- I re-organized notebook functions into separate module [db_init.py](https://github.com/danraskin/SpikeAlerts_Heroku/blob/main/App/modules/db_init.py)
 - lines 94-105: evalutes whether database needs initialization
-- [project initialization script](https://github.com/SpikeAlerts/SpikeAlerts_Heroku/blob/main/App/aq_spikealerts.py) initializes database and runs [main project script](https://github.com/SpikeAlerts/SpikeAlerts_Heroku/blob/main/App/modules/MAIN.py) as a while loop.
+- [project initialization script](https://github.com/danraskin/SpikeAlerts_Heroku/blob/main/App/aq_spikealerts.py) initializes database and runs [main project script](https://github.com/danraskin/SpikeAlerts_Heroku/blob/main/App/modules/MAIN.py) as a while loop.
 
